@@ -8,6 +8,8 @@ import Dashboard from "./components/UserProfile";
 import NotFound from "./components/NotFound"; 
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import AboutUs from "./components/AboutUs"
+
 
 function App() {
   return (
@@ -22,6 +24,9 @@ function App() {
           <Route path="*" element={<NotFound />} /> {/* ✅ Handle unknown routes */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          
+
         </Routes>
       </Router>
     </AuthProvider>

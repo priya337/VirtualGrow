@@ -1,0 +1,27 @@
+
+.navbar {
+height: 50px;
+width: 120vh;
+display: flex;
+justify-content:space-around;
+background-color:aquamarine;
+font-size: 20px;
+}
+/* .nav-links { text-decoration: none; color: white; font-size: 1rem; padding: 5px 10px; border-radius: 5px; transition: 0.3s ease-in-out; margin-right: 20px;}
+.logoAndName { display: flex; align-items: center; }
+.logo { width: 40px; Adjust size as needed */
+
+
+.logoAndName{
+height: 100px;
+display: flex;
+justify-content: flex-start
+}
+.userLogin{
+    height: 30%;
+    display: flex;
+    justify-content: flex-end;
+
+}
+.userLogin a {margin-left: 38px;}
+.MoreLinks a {margin-left: 38px}
