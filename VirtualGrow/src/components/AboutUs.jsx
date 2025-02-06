@@ -60,7 +60,7 @@ const AboutUs =() => {
     </section>
 
     <footer>
-        <p>&copy; 2025 [Your Virtual Garden Name]. All rights reserved.</p>
+        <p>&copy; 2025 Virtual Grow. All rights reserved.</p>
     </footer>
      </div>
     );
