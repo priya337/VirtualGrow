@@ -32,25 +32,130 @@ const Signup = () => {
   };
 
   return (
-    <form onSubmit={handleSignup}>
-      <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
-      <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-      <input type="number" name="age" placeholder="Age" onChange={handleChange} required />
-      <input type="text" name="location" placeholder="Location" onChange={handleChange} />
-      <input type="text" name="photo" placeholder="Photo URL" onChange={handleChange} required />
+   <div className="register-area">
+     <form className="signup" onSubmit={handleSignup}>
+      <h2>Sign up</h2>
+      <div className="form-fields">
+        <div className="row">
+          <div className="col-label">
+            <label htmlFor="name">Name </label>
+          </div>
+          
+           <input 
+            type="text" 
+            name="name" 
+            placeholder="Name" 
+            onChange={handleChange} 
+            required 
+            id="field"
+           />
+         
+        </div>
+        <div className="row">
+         <div className="col-label">
+            <label htmlFor="email">Email </label>
+          </div>
+          
+           <input 
+            type="email" 
+            name="email" 
+            placeholder="Email" 
+            onChange={handleChange} 
+            required 
+            id="field"
+           />
+         
+        </div>
+        <div className="row">
+         <div className="col-label">
+            <label htmlFor="password">Password </label>
+         </div>
+         
+           <input 
+            type="password" 
+            name="password" 
+            placeholder="Password" 
+            onChange={handleChange} 
+            required 
+            id="field"
+           />
+        
+       </div>
+       <div className="row">
+        <div className="col-label">
+          <label htmlFor="age">Age </label>
+        </div>
+       
+         <input 
+           type="number" 
+           name="age" 
+           placeholder="Age" 
+           onChange={handleChange} 
+           required 
+           id="field"
+          />
       
-      <label>
-        <input type="checkbox" name="ExteriorPlants" onChange={handleChange} />
-        Interested in Exterior Plants
-      </label>
-      <label>
-        <input type="checkbox" name="InteriorPlants" onChange={handleChange} />
-        Interested in Interior Plants
-      </label>
+       </div>
+       <div className="row">
+        <div className="col-label">
+         <label htmlFor="location">Location </label>
+        </div>
+        
+         <input 
+           type="text" 
+           name="location" 
+           placeholder="Location" 
+           onChange={handleChange} 
+           id="field"
+          />
+        
+       </div>
+       <div className="row">
+        <div className="col-label">
+         <label htmlFor="photo">Photo-Url </label>
+        </div>
+        
+         <input 
+           type="text" 
+           name="photo" 
+           placeholder="Photo URL" 
+           onChange={handleChange} 
+           required 
+           id="field"
+          />
+        
+       </div>
+       <div className="row-checkboxes">
+        <div className="col-label">
+         <label>
+          <input 
+            className="interested"
+            type="checkbox" 
+            name="ExteriorPlants" 
+            onChange={handleChange} 
+            />
+            Interested in Exterior Plants
+          </label>
+         </div>
+  
+        <div className="col-label">
+        <label>
+         <input 
+           className="interested"
+           type="checkbox" 
+           name="InteriorPlants" 
+          onChange={handleChange} 
+         />
+         Interested in Interior Plants
+        </label>
+        </div>
+       </div>
 
-      <button type="submit">Sign Up</button>
-    </form>
+       <button type="submit">Sign Up</button>
+      
+      </div>
+     </form>
+    </div>
   );
 };
 

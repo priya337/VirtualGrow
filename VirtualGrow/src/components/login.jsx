@@ -30,9 +30,9 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+    <div className="login-page">
+      <h2 className="login-title">Login</h2>
+      <form className="login" onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
@@ -59,7 +59,7 @@ const Login = () => {
           </a>
         </p> */}
         <p>
-          <a href="/reset-password" style={{ color: "blue", cursor: "pointer" }}>
+          <a className="reset-password"href="/reset-password">
             Reset Password
           </a>
         </p>

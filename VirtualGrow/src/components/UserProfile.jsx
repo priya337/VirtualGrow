@@ -12,7 +12,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
+    <div style={{ textAlign: "center", padding: "20px"}}>
       <h1>Welcome, {user.name}!</h1>
       <p>Email: {user.email}</p>
       <p>Age: {user.age}</p>

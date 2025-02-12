@@ -8,7 +8,9 @@ import Dashboard from "./components/UserProfile";
 import NotFound from "./components/NotFound"; 
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
-import AboutUs from "./components/AboutUs"
+import AboutUs from "./components/AboutUs";
+import Footer from "./components/Footer";
+
 
 
 function App() {
@@ -25,9 +27,12 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/aboutus" element={<AboutUs />} />
+         
           
 
         </Routes>
+        <Footer/>
+        
       </Router>
     </AuthProvider>
   );
