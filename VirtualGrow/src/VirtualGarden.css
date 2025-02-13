@@ -8,7 +8,13 @@ background-color:aquamarine;
 font-size: 25px;
 align-items: center;
 font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+position: fixed;  /* Fixed position on top */
+  top: 0;           /* Position at the top of the page */
+  left: 0;          /* Align to the left */
+  z-index: 1000;    /* Ensure it's above other content */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);  /* Optional: Add a shadow for some depth */
 }
+
 
 .logoAndName{
 height: 100px;
@@ -18,7 +24,7 @@ align-items: center;
 font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .logo{
-    height:150px
+    height:90px
 }
 
 .userLogin{
@@ -31,52 +37,127 @@ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
 .about{
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 10vh;
+    height: 100vh;
+    width: 100%;
+    background-image: url('./src/assets/garden2.jpg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    
 }
-/* 
-
-.login{
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content:center;
-    align-items: center;
-
-
+.about h1{
+  margin-left: 50px;
+  margin-top: 50px;
+  padding-top: 50px;
 }
-.login-title{
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content:center;
-    align-items: center;
-    margin-top: 200px;
-    margin-right: 280px;
-    margin-bottom: 60px;
-    font-size: 30px;
+.about section {
+  margin-left: 50px;
+  margin-right: 80px;
 }
-.reset-password{
-    color: blue; 
-    cursor: pointer;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.about h2 {
+  display: block; 
+  color: #000; 
+  font-size: 1.5rem; 
+  margin: 10px 0; 
+  text-align: left;
+}
+
+.about footer {
+  margin-top: 40px;
+  margin-right: 20px;
+  text-align: end;
+}
+.home{
+  
     display: flex;
-    justify-content:center;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    margin-left: 240px;
-} */
+    height: 100vh;
+    background-image: url('./src/assets/garden2.jpg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+}
+
+.homepage-logo{
+  width: 500px;
+  font-weight: bolder;
+}
+
+.slogan {
+  color: white
+}
+.profile{
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-top: 10vh;
+  height: 100vh;
+  width: 100%;
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image: url('./src/assets/garden2.jpg'); 
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat;
+  
+}
 
 .login-page {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 85vh;
-    background-image: url('./src/assets/garden2.jpg'); /* Aquí se agrega la imagen de fondo */
-    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
-    background-position: center; /* Centra la imagen de fondo */
-    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    height: 100vh;
+    background-image: url('./src/assets/garden2.jpg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
   }
+ 
+  .login-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: white;
+  }
+  
+  
+  button {
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    color: white;
+  }
+  .login-buttons {
+    display: flex;
+    justify-content: space-between;
+    width:100%
+  }
+  .login-button {
+    background-color: #4CAF50; 
+    width: 48%
+  }
+  
+  .signup-button {
+    background-color: #007BFF; 
+    width: 48%
+  }
+  button:hover {
+    opacity: 0.8; 
+  }
+  
+  button:focus {
+    outline: none; 
+  }
+  
 
 .register-area {
+  margin-top: 10vh;
     width: 100vw;
-    height: 79vh;
+    height: 100vh;
     padding: 20px;
     position: relative;
     background-image: url('./src/assets/garden2.jpg'); 
@@ -197,6 +278,11 @@ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     justify-content: center;
     align-items: center;
     bottom: 0;
+    position: fixed;              /* Fixed position at the bottom */
+    bottom: 0;                    /* Position it at the bottom of the page */
+    left: 0;                      /* Align to the left of the screen */
+    z-index: 1000;                /* Ensure it's above other content */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .git-logo{

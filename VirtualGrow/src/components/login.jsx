@@ -48,7 +48,8 @@ const Login = () => {
           required
         />
         {error && <p style={{ color: "red" }}>{error}</p>} {/* ✅ Displays error messages */}
-        <button type="submit">Login</button>
+        <button className="login-button" type="submit">Login</button>
+        <button className="signup-button" type="button" onClick={() => navigate("/signup")}>New here? Sign up</button>
       </form>
 
       {/* 🔗 Forgot & Reset Password Links */}
