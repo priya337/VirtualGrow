@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5005/api", // Update this based on your backend URL
+  baseURL: "http://localhost:5006/api", // Update this based on your backend URL
 });
 
 // 🔹 Create User Profile (Signup)

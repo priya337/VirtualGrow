@@ -11,7 +11,10 @@ import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import AboutUs from "./components/AboutUs";
 import Footer from "./components/Footer";
-
+import CreateGarden from "./components/CreateGarden";
+import Gardenscapes from "./components/Gardenscapes";
+import GardenList from "./components/GardenList";
+import EditGarden from "./components/EditGarden";
 
 
 function App() {
@@ -24,6 +27,11 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/create-garden" element={<CreateGarden />} />
+          <Route path="/edit-garden/:gardenName" element={<EditGarden />} />
+          <Route path="/gardens" element={<GardenList />} /> {/* ✅ GardenList */}
+          <Route path="/gardenscapes/:name" element={<Gardenscapes />} />
+          <Route path="/gardenscapes" element={<GardenList />} /> {/* ✅ GardenScape */}
           <Route path="/userprofile" element={<Dashboard />} /> {/* ✅ Add Dashboard route */}
           <Route path="*" element={<NotFound />} /> {/* ✅ Handle unknown routes */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
