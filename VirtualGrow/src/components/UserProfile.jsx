@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext"; // ✅ Ensure correct import
+import { authcontext.jsx } from "../context/authcontext.jsx"; // ✅ Ensure correct import
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useContext(authcontext.jsx);
   const navigate = useNavigate();
 
   if (!user) {

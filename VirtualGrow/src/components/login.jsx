@@ -1,11 +1,11 @@
 import { useState, useContext } from "react";
-import { AuthContext } from "../context/authcontext.jsx"; // ✅ Ensure correct casing
+import { authcontext.jsx } from "../context/authcontext.jsx"; // ✅ Ensure correct casing
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState(""); // ✅ State for error messages
-  const { login } = useContext(AuthContext);
+  const { login } = useContext(authcontext.jsx);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
