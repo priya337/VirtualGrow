@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar.jsx";
 import Dashboard from "./components/UserProfile.jsx"; 
 import NotFound from "./components/Notfound.jsx"; 
 import ForgotPassword from "./components/forgotpassword.jsx";
-import ResetPassword from "./components/resetPassword.jsx";
+import ResetPassword from "./components/resetpassword.jsx";
 import AboutUs from "./components/AboutUs.jsx";
 import Footer from "./components/Footer.jsx";
 import CreateGarden from "./components/creategarden.jsx";
