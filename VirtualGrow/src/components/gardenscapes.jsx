@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import API_URL from "../components/api"; // Ensure correct path based on your project structure
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Gardenscape() {
@@ -102,7 +103,7 @@ export default function Gardenscape() {
     const fetchGarden = async () => {
       try {
         const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
-        console.log(`🔍 Fetching garden details from: ${API_URL}/api/ai/garden/${name}`);
+        console.log(`🔍 Fetching garden details from: ${API_URL.defaults.baseURL}/api/ai/garden/${name}`);
 
         const response = await axios.get(`${API_URL}/api/ai/garden/${name}`);
         console.log("✅ Fetched Garden Details:", response.data);
