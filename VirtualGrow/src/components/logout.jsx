@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
-import { authcontext.jsx } from "../context/authcontext.jsx"; // ✅ Ensure correct casing
+import { AuthContext } from "../context/authcontext.jsx"; // ✅ Ensure correct casing
 import { useNavigate } from "react-router-dom";
 
 const Logout = () => {
-  const { user, logout } = useContext(authcontext.jsx);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // ✅ Redirect only after logout, not before
