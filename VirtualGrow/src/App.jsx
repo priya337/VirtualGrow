@@ -6,7 +6,7 @@ import Login from "./components/login.jsx";
 import Logout from "./components/logout.jsx"; 
 import Navbar from "./components/Navbar.jsx"; 
 import Dashboard from "./components/UserProfile.jsx"; 
-import NotFound from "./components/NotFound.jsx"; 
+import NotFound from "./components/Notfound.jsx"; 
 import ForgotPassword from "./components/forgotPassword.jsx";
 import ResetPassword from "./components/resetPassword.jsx";
 import AboutUs from "./components/AboutUs.jsx";
