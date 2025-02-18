@@ -1,12 +1,12 @@
 import axios from "axios";
 
 // Ensure the environment variable is properly checked
-const BASE_URL = import.meta.env.VITE_BACKEND_URL
-  ? import.meta.env.VITE_BACKEND_URL
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL
   : "http://localhost:5007";
 
 const API_URL = axios.create({
-  baseURL: BASE_URL, // Use the environment variable or default localhost
+  baseURL: "https://virtualgrow-server.onrender.com" // Use the environment variable or default localhost
 });
 
 // 🔹 Create User Profile (Signup)
