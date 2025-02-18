@@ -1,21 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/authcontext.jsx";
-import Signup from "./components/Signup"; 
-import Homepage from "./components/Homepage";
-import Login from "./components/Login"; 
-import Logout from "./components/Logout"; 
-import Navbar from "./components/Navbar"; 
-import Dashboard from "./components/UserProfile"; 
-import NotFound from "./components/NotFound"; 
-import ForgotPassword from "./components/ForgotPassword";
-import ResetPassword from "./components/ResetPassword";
-import AboutUs from "./components/AboutUs";
-import Footer from "./components/Footer";
-import CreateGarden from "./components/CreateGarden";
-import Gardenscapes from "./components/Gardenscapes";
-import GardenList from "./components/GardenList";
-import GardenPicks from "./components/GardenPicks";  // ✅ FIXED IMPORT
-import EditGarden from "./components/EditGarden";
+import Signup from "./components/Signup.jsx"; 
+import Homepage from "./components/Homepage.jsx";
+import Login from "./components/Login.jsx"; 
+import Logout from "./components/Logout.jsx"; 
+import Navbar from "./components/Navbar.jsx"; 
+import Dashboard from "./components/UserProfile.jsx"; 
+import NotFound from "./components/NotFound.jsx"; 
+import ForgotPassword from "./components/ForgotPassword.jsx";
+import ResetPassword from "./components/ResetPassword.jsx";
+import AboutUs from "./components/AboutUs.jsx";
+import Footer from "./components/Footer.jsx";
+import CreateGarden from "./components/CreateGarden.jsx";
+import Gardenscapes from "./components/Gardenscapes.jsx";
+import GardenList from "./components/GardenList.jsx";
+import GardenPicks from "./components/GardenPicks.jsx";  // ✅ FIXED IMPORT
+import EditGarden from "./components/EditGarden.jsx";
 
 function App() {
   return (
