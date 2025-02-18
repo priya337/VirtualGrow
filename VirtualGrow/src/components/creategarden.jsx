@@ -19,8 +19,8 @@ export default function CreateGarden() {
   useEffect(() => {
     const fetchExistingGardens = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5006";
-        const response = await axios.get(`${backendUrl}/api/ai/gardens`);
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
+        const response = await axios.get(`${API_URL}/api/ai/gardens`);
         setExistingGardenNames(response.data.map(garden => garden.name) || []);
       } catch (error) {
         console.error("❌ Error fetching existing gardens:", error);
@@ -52,7 +52,7 @@ export default function CreateGarden() {
 
     setLoading(true);
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5006";
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
       console.log("🌱 Backend URL:", backendUrl);
 
       const requestBody = {
@@ -66,7 +66,7 @@ export default function CreateGarden() {
 
       console.log("🚀 Sending Request:", requestBody);
 
-      const aiResponse = await axios.post(`${backendUrl}/api/ai/generate-garden-overview`, requestBody);
+      const aiResponse = await axios.post(`${API_URL}/api/ai/generate-garden-overview`, requestBody);
       console.log("✅ API Response:", aiResponse.data);
 
       setExistingGardenNames((prev) => [...prev, aiResponse.data.name]);

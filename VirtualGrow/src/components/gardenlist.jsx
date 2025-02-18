@@ -1,43 +1,65 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTrash, FaEdit } from "react-icons/fa";
+
 
 export default function GardenList() {
   const [gardens, setGardens] = useState([]);
   const [error, setError] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [deleteMessage, setDeleteMessage] = useState(null);
   const [gardenToDelete, setGardenToDelete] = useState(null);
+  const navigate = useNavigate();
+  const [selectedCarrot, setSelectedCarrot] = useState(null);
 
-  // ✅ Fetch Gardens (Fixed)
-  const fetchGardens = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5006";
-      console.log(`Fetching gardens from: ${backendUrl}/api/ai/gardens`);
+  const [favoriteGardens, setFavoriteGardens] = useState([]);
 
-      const response = await axios.get(`${backendUrl}/api/ai/gardens`);
-      console.log("Response status:", response.status);
-      console.log("Response data:", response.data);
+useEffect(() => {
+  const storedFavorites = JSON.parse(localStorage.getItem("favoriteGardens")) || [];
+  setFavoriteGardens(storedFavorites);
+}, []);
 
-      if (response.status === 200 && Array.isArray(response.data)) {
-        setGardens(response.data.length === 0 ? [] : response.data);
-      } else {
-        console.error("Unexpected response format:", response);
-        setError("Failed to fetch gardens.");
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setError("Failed to fetch gardens.");
-    } finally {
-      setLoading(false);
+
+  // 🥕 Handle Carrot Click (Now Receives Garden Properly)
+  const handleCarrotClick = (garden) => {
+    if (!garden || !garden.name) {
+      console.error("Error: Garden data is missing!", garden);
+      return;
     }
+
+    console.log("🥕 Carrot clicked! Navigating to /gardenpicks with:", garden);
+    setSelectedCarrot(garden.name);
+
+    setTimeout(() => {
+      navigate("/gardenpicks", { state: { selectedGarden: garden } }); // Redirect with garden data
+    }, 300);
   };
 
-  // ✅ Ensures fetchGardens is called only once when the component mounts
+  // ✅ Fetch Gardens (Fixed)
   useEffect(() => {
+    const fetchGardens = async () => {
+      try {
+        setLoading(true);
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
+        const response = await axios.get(`${API_URL}/api/ai/gardens`);
+  
+        console.log("✅ API Response:", response.data);
+  
+        if (response.status === 200 && Array.isArray(response.data)) {
+          setGardens(response.data);
+        } else {
+          setError("Failed to fetch gardens.");
+        }
+      } catch (error) {
+        console.error("❌ Fetch Error:", error);
+        setError("Failed to fetch gardens.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchGardens();
   }, []);
 
@@ -52,27 +74,27 @@ export default function GardenList() {
       console.log("No garden selected for deletion.");
       return;
     }
-
-    console.log(`Attempting to delete: "${gardenToDelete}"`); // ✅ Debugging log
-
+  
+    console.log(`Attempting to delete: "${gardenToDelete}"`);
+  
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5006";
-      const response = await axios.delete(`${backendUrl}/api/ai/garden/${encodeURIComponent(gardenToDelete)}`);
-
-      console.log(`Response from server:`, response.data);
-
-      setDeleteMessage(`AI Garden "${gardenToDelete}" has been deleted successfully!`);
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
+      await axios.delete(`${API_URL}/api/ai/garden/${encodeURIComponent(gardenToDelete)}`);
+  
+      setDeleteMessage(`Garden "${gardenToDelete}" has been deleted successfully!`);
       setTimeout(() => setDeleteMessage(null), 3000);
-
-      // ✅ Remove deleted garden from state to update UI immediately
+  
+      // Remove the deleted garden from the list
       setGardens(prevGardens => prevGardens.filter(garden => garden.name !== gardenToDelete));
-
-      setGardenToDelete(null); // ✅ Close modal after deletion
+  
+      // Close modal
+      setGardenToDelete(null);
     } catch (error) {
       console.error("Failed to delete:", error);
       setError("Failed to delete garden.");
     }
   };
+  
 
   return (
     <div
@@ -133,9 +155,9 @@ export default function GardenList() {
 
                     {/* Buttons for View, Edit, and Delete */}
                     <div className="d-flex justify-content-center gap-2">
-                      <Link to={`/gardenscapes/${garden.name}`} className="btn btn-primary">
+                      {/* <Link to={`/gardenscapes/${garden.name}`} className="btn btn-primary">
                         View
-                      </Link>
+                      </Link> */}
 
                       <Link to={`/edit-garden/${garden.name}`} className="btn btn-warning">
                         <FaEdit />
@@ -144,6 +166,32 @@ export default function GardenList() {
                       <button className="btn btn-danger" onClick={() => confirmDelete(garden.name)}>
                         <FaTrash />
                       </button>
+
+{/* 🥕 Carrot Button (Redirects to Garden Picks) */}
+<button
+  onClick={() => {
+    if (!favoriteGardens.some(fav => fav.name === garden.name)) {
+      handleCarrotClick(garden);
+    }
+  }} 
+  className="btn"
+  style={{
+    backgroundColor: selectedCarrot === garden.name ? "#ffa500" : "#28a745",
+    color: "#fff",
+    fontSize: "20px",
+    fontWeight: "bold",
+    transition: "background-color 0.3s ease",
+    border: "2px solid #ffa500",
+    padding: "5px 10px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    opacity: favoriteGardens.some(fav => fav.name === garden.name) ? 0.5 : 1, // Make it visually disabled if already added
+    pointerEvents: favoriteGardens.some(fav => fav.name === garden.name) ? "none" : "auto", // Prevent clicking if already added
+  }}
+>
+  🥕
+</button>
+
                     </div>
                   </div>
                 </div>
@@ -153,31 +201,31 @@ export default function GardenList() {
         )}
       </div>
       {/* Confirmation Modal */}
-      {gardenToDelete && (
-        <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Confirm Deletion</h5>
-                <button type="button" className="close" onClick={() => setGardenToDelete(null)}>
-                  <span>&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <p>Are you sure you want to delete the garden "<strong>{gardenToDelete}</strong>"?</p>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setGardenToDelete(null)}>
-                  Cancel
-                </button>
-                <button type="button" className="btn btn-danger" onClick={handleDelete}>
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
+{gardenToDelete && (
+  <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+    <div className="modal-dialog" role="document">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Confirm Deletion</h5>
+          <button type="button" className="btn-close" onClick={() => setGardenToDelete(null)}></button>
         </div>
-      )}
+        <div className="modal-body">
+          <p>Are you sure you want to delete the garden "<strong>{gardenToDelete}</strong>"?</p>
+        </div>
+        <div className="modal-footer">
+          <button type="button" className="btn btn-secondary" onClick={() => setGardenToDelete(null)}>
+            Cancel
+          </button>
+          <button type="button" className="btn btn-danger" onClick={handleDelete}>
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
+)}
+
+    </div>
+    
   );
 }

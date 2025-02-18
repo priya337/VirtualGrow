@@ -11,6 +11,8 @@ export default function Gardenscape() {
   const [loadingImage, setLoadingImage] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+
+
   const getFormattedLayoutSuggestions = () => {
     if (!selectedGarden?.gardenPlanOverview?.GardenPlanOverview?.LayoutSuggestions) {
       console.warn("⚠️ No Layout Suggestions found in selectedGarden!");
@@ -99,10 +101,10 @@ export default function Gardenscape() {
 
     const fetchGarden = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5006";
-        console.log(`🔍 Fetching garden details from: ${backendUrl}/api/ai/garden/${name}`);
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
+        console.log(`🔍 Fetching garden details from: ${API_URL}/api/ai/garden/${name}`);
 
-        const response = await axios.get(`${backendUrl}/api/ai/garden/${name}`);
+        const response = await axios.get(`${API_URL}/api/ai/garden/${name}`);
         console.log("✅ Fetched Garden Details:", response.data);
 
         if (!response.data) {
@@ -143,9 +145,6 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
     }
   }, [showModal, selectedGarden]);
   
-  
-  
-  
 
   const generateGardenImage = async () => {
     setLoadingImage(true);
@@ -163,8 +162,8 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
       setImageUrl(apiUrl);
 
       // Save image URL to the database
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5006";
-      await axios.post(`${backendUrl}/api/ai/saveImage`, {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
+      await axios.post(`${API_URL}/api/ai/saveImage`, {
         gardenName: name,
         imageUrl: apiUrl,
       });
@@ -179,14 +178,14 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
   };
 
   return (
-    <div className="min-vh-200 d-flex flex-column align-items-center justify-content-center p-3"
-      style={{
-        background: "linear-gradient(rgba(0, 50, 0, 0.8), rgba(0, 50, 0, 0.8)), url('/src/images/green-planet_12829583.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        width: "100vw",
-        height: "100vh"
-      }}
+    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-4"
+    style={{
+      background: " url('/images/nature.jpg')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      width: "100vw",
+      height: "100vh",
+    }}
     >
       <h2 className="text-center text-light">AI Garden Planner</h2>
 
@@ -291,7 +290,6 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
     </div>
   </div>
 )}
-
 
               <Link to="/gardenscapes" className="btn btn-secondary btn-lg w-100">
                 Back to List
