@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext"; // ✅ Ensure correct casing
+import { AuthContext } from "../context/authcontext.jsx"; // ✅ Ensure correct casing
 import { useNavigate } from "react-router-dom";
 
 const Logout = () => {
