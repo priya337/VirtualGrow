@@ -42,8 +42,8 @@ useEffect(() => {
     const fetchGardens = async () => {
       try {
         setLoading(true);
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
-        const response = await axios.get(`${API_URL}/api/ai/gardens`);
+        const backendUrl = "https://virtualgrow-server.onrender.com";
+        const response = await axios.get(`${backendUrl}/api/ai/gardens`);
   
         console.log("✅ API Response:", response.data);
   
@@ -78,8 +78,8 @@ useEffect(() => {
     console.log(`Attempting to delete: "${gardenToDelete}"`);
   
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
-      await axios.delete(`${API_URL}/api/ai/garden/${encodeURIComponent(gardenToDelete)}`);
+      const backendUrl = "https://virtualgrow-server.onrender.com";;
+      await axios.delete(`${backendUrl}/api/ai/garden/${encodeURIComponent(gardenToDelete)}`);
   
       setDeleteMessage(`Garden "${gardenToDelete}" has been deleted successfully!`);
       setTimeout(() => setDeleteMessage(null), 3000);
