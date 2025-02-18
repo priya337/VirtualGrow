@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext"; // 
+import { AuthProvider } from "./context/authcontext.jsx";
 import Signup from "./components/Signup"; 
 import Homepage from "./components/Homepage";
 import Login from "./components/Login"; 
@@ -14,8 +14,8 @@ import Footer from "./components/Footer";
 import CreateGarden from "./components/CreateGarden";
 import Gardenscapes from "./components/Gardenscapes";
 import GardenList from "./components/GardenList";
+import GardenPicks from "./components/GardenPicks";  // ✅ FIXED IMPORT
 import EditGarden from "./components/EditGarden";
-
 
 function App() {
   return (
@@ -29,20 +29,18 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/create-garden" element={<CreateGarden />} />
           <Route path="/edit-garden/:gardenName" element={<EditGarden />} />
-          <Route path="/gardens" element={<GardenList />} /> {/* ✅ GardenList */}
+          <Route path="/gardenpicks" element={<GardenPicks />} />  {/* ✅ GardenPicks Route */}
+          <Route path="/gardens" element={<GardenList />} />       {/* ✅ GardenList Route */}
           <Route path="/gardenscapes/:name" element={<Gardenscapes />} />
-          <Route path="/gardenscapes" element={<GardenList />} /> {/* ✅ GardenScape */}
-          <Route path="/userprofile" element={<Dashboard />} /> {/* ✅ Add Dashboard route */}
-          <Route path="*" element={<NotFound />} /> {/* ✅ Handle unknown routes */}
+          <Route path="/gardenpicks/:name" element={<GardenPicks />} />
+          <Route path="/gardenscapes" element={<GardenList />} />  {/* ✅ Gardenscapes */}
+          <Route path="/userprofile" element={<Dashboard />} />    {/* ✅ User Dashboard */}
+          <Route path="*" element={<NotFound />} />                {/* ✅ Handle unknown routes */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/aboutus" element={<AboutUs />} />
-         
-          
-
         </Routes>
-        <Footer/>
-        
+        <Footer />
       </Router>
     </AuthProvider>
   );
