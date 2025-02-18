@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import API_URL from "../components/api"; // Ensure correct path based on your project structure
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Gardenscape() {
