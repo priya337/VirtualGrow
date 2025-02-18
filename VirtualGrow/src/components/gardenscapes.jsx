@@ -102,10 +102,10 @@ export default function Gardenscape() {
 
     const fetchGarden = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
-        console.log(`🔍 Fetching garden details from: ${API_URL.defaults.baseURL}/api/ai/garden/${name}`);
+        const backendUrl = "https://virtualgrow-server.onrender.com";
+        console.log(`🔍 Fetching garden details from: ${backendUrl}/api/ai/garden/${name}`);
 
-        const response = await axios.get(`${API_URL.defaults.baseURL}/api/ai/garden/${name}`);
+        const response = await axios.get(`${backendUrl}/api/ai/garden/${name}`);
         console.log("✅ Fetched Garden Details:", response.data);
 
         if (!response.data) {
@@ -163,8 +163,8 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
       setImageUrl(apiUrl);
 
       // Save image URL to the database
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
-      await axios.post(`${API_URL.defaults.baseURL}/api/ai/saveImage`, {
+      const backendUrl = "https://virtualgrow-server.onrender.com";
+      await axios.post(`${backendUrl}/api/ai/saveImage`, {
         gardenName: name,
         imageUrl: apiUrl,
       });
