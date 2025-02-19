@@ -67,7 +67,7 @@ const Logout = () => {
             transition: "background 0.3s",
           }}
         >
-          Go to Homepage
+          Back to Login
         </button>
       </div>
     </div>
