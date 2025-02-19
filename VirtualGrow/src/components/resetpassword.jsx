@@ -1,7 +1,8 @@
 import { useState } from "react";
-import API from "../components/api/api"; // ✅ Ensure correct API import
+import { UseAuth } from "../context/authcontext.jsx"; // ✅ Import AuthContext
 
 const ResetPassword = () => {
+  const { resetPassword } = UseAuth(); // ✅ Use resetPassword function from AuthContext
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -13,10 +14,10 @@ const ResetPassword = () => {
     setError("");
 
     try {
-      await API.post("/users/reset-password", { email, newPassword });
+      await resetPassword(email, newPassword);
       setMessage("✅ Password updated successfully! You can now log in.");
     } catch (err) {
-      if (err.response?.status === 400) {
+      if (err === "invalid_request") {
         setError("❌ Invalid or expired reset request.");
       } else {
         setError("❌ Something went wrong. Please try again.");
