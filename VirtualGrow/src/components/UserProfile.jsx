@@ -60,17 +60,19 @@ const Dashboard = () => {
           textAlign: "center",
         }}
       >
-        {/* ✅ User Profile Picture */}
+        {/* ✅ Square User Profile Picture */}
         <img
           src={user.photo ? user.photo : "/images/default-avatar.png"} // ✅ Show user photo or placeholder
           alt="User Avatar"
           style={{
-            width: "100px",
-            height: "100px",
-            borderRadius: "50%",
+            width: "120px",
+            height: "120px",
             objectFit: "cover",
             border: "3px solid #2F855A",
             marginBottom: "10px",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
         />
 
