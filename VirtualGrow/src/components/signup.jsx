@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/authcontext.jsx"; // ✅ Using AuthContext
 import { useNavigate } from "react-router-dom";
-import "./src/VirtualGarden.css"; // ✅ Import global CSS
+// import "./src/VirtualGarden.css"; // ✅ Import global CSS
 
 const Signup = () => {
   const { signup } = useContext(AuthContext); // ✅ Using signup function from AuthContext
