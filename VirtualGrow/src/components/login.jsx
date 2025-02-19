@@ -1,32 +1,27 @@
 import { useState, useContext } from "react";
-import { AuthContext } from "../context/authcontext.jsx"; // ✅ Ensure correct casing
+import { AuthContext } from "../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-// import "./src/VirtualGarden.css"; // ✅ Import global CSS
+import "../styles/VirtualGarden.css";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); 
+    setError("");
 
     try {
       const result = await login(form.email, form.password);
       if (result === "success") {
-        navigate("/userprofile"); 
-      } else if (result === "user_not_found") {
-        setError("❌ User not found. Please sign up.");
-      } else if (result === "invalid_credentials") {
-        setError("⚠️ Invalid email or password. Please try again.");
+        navigate("/userprofile"); // ✅ Redirect to User Profile
       } else {
-        setError("❌ Something went wrong. Please try again later.");
+        setError("❌ Invalid credentials. Please try again.");
       }
     } catch (err) {
-      setError("❌ An unexpected error occurred. Please try again later.");
-      console.error("Login error:", err);
+      setError("❌ An error occurred. Please try again later.");
     }
   };
 
@@ -48,18 +43,13 @@ const Login = () => {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
         />
-        {error && <p className="error-message">{error}</p>} 
-        <button className="login-button" type="submit">Login</button>
-        <button className="signup-button" type="button" onClick={() => navigate("/signup")}>New here? Sign up</button>
+        {error && <p className="error-message">{error}</p>}
+        <button type="submit" className="login-button">Login</button>
       </form>
-
-      <div className="forgot-password-links">
-        <p>
-          <a className="reset-password" href="/reset-password">
-            Reset Password
-          </a>
-        </p>
-      </div>
+      <button className="signup-button" onClick={() => navigate("/signup")}>New here? Sign up</button>
+      <p>
+        <a className="reset-password" href="/reset-password">Reset Password</a>
+      </p>
     </div>
   );
 };
