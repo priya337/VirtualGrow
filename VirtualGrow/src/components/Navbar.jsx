@@ -51,18 +51,8 @@ const Navbar = () => {
           </>
         ) : accessToken ? (
           <>
-            {isAboutUs ? (
-              <>
-                <Link to="/gardenscapes">Gardenscapes</Link>
-                <Link to="/gardenpicks">Gardenpicks</Link>
-              </>
-            ) : (
-              <>
-                <Link to="/gardenscapes">Gardenscapes</Link>
-                <Link to="/gardenpicks">Gardenpicks</Link>
-                <Link to="/aboutUs">About Us</Link>
-              </>
-            )}
+            <Link to="/gardenscapes">Gardenscapes</Link>
+            <Link to="/gardenpicks">Gardenpicks</Link>
             <div className="profile-dropdown" style={{ marginLeft: 'auto' }}>
               <FaUserCircle 
                 size={28} 
