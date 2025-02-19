@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../VirtualGarden.css"; // Keep external styles intact
 import Logo from "../assets/VirtualGrowLogo.png";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { UseAuth } from "../context/authcontext.jsx";
 import { FaUserCircle } from "react-icons/fa"; // Import the face icon
 
@@ -13,13 +13,6 @@ const Navbar = () => {
 
   // Check if on login or signup page
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
-  const isAboutUs = location.pathname === "/aboutUs";
-
-  useEffect(() => {
-    if (!accessToken) {
-      setDropdownOpen(false);
-    }
-  }, [accessToken]);
 
   return (
     <nav className="navbar">
@@ -38,42 +31,7 @@ const Navbar = () => {
             <Link to="/">Home</Link>
             <Link to="/aboutUs">About Us</Link>
           </>
-        ) : isAboutUs && !accessToken ? (
-          <>
-            <Link to="/">Home</Link>
-            <div className="profile-dropdown">
-              <FaUserCircle 
-                size={28} 
-                className="profile-icon" 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              />
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/login">Login</Link>
-                  <Link to="/signup">Signup</Link>
-                </div>
-              )}
-            </div>
-          </>
-        ) : accessToken ? (
-          <>
-            <Link to="/gardenscapes">Gardenscapes</Link>
-            <Link to="/gardenpicks">Gardenpicks</Link>
-            <div className="profile-dropdown" style={{ marginLeft: 'auto' }}>
-              <FaUserCircle 
-                size={28} 
-                className="profile-icon" 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              />
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/userprofile">User Profile</Link>
-                  <Link to="/logout" onClick={logout}>Logout</Link>
-                </div>
-              )}
-            </div>
-          </>
-        ) : (
+        ) : location.pathname === "/" ? (
           <>
             <Link to="/aboutUs">About Us</Link>
             <div className="profile-dropdown">
@@ -89,6 +47,25 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+          </>
+        ) : (
+          <>
+            <Link to="/gardenscapes">Gardenscapes</Link>
+            <Link to="/gardenpicks">Gardenpicks</Link>
+            <div className="profile-dropdown">
+              <FaUserCircle 
+                size={28} 
+                className="profile-icon" 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              />
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <Link to="/userprofile">User Profile</Link>
+                  <Link to="/logout" onClick={logout}>Logout</Link>
+                </div>
+              )}
+            </div>
+            <Link to="/aboutUs">About Us</Link>
           </>
         )}
       </div>
