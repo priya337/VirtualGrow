@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/authcontext.jsx";
 import { useNavigate } from "react-router-dom";
-import "../styles/VirtualGarden.css";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
