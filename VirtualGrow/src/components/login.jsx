@@ -1,21 +1,22 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/authcontext.jsx"; // ✅ Ensure correct casing
 import { useNavigate } from "react-router-dom";
+import "../styles/VirtualGarden.css"; // ✅ Import global CSS
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState(""); // ✅ State for error messages
+  const [error, setError] = useState(""); 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // ✅ Clear previous errors
+    setError(""); 
 
     try {
       const result = await login(form.email, form.password);
       if (result === "success") {
-        navigate("/userprofile"); // ✅ Navigate to user profile on successful login
+        navigate("/userprofile"); 
       } else if (result === "user_not_found") {
         setError("❌ User not found. Please sign up.");
       } else if (result === "invalid_credentials") {
@@ -32,7 +33,7 @@ const Login = () => {
   return (
     <div className="login-page">
       <h2 className="login-title">Login</h2>
-      <form className="login" onSubmit={handleLogin}>
+      <form className="login-form" onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
@@ -47,20 +48,14 @@ const Login = () => {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
         />
-        {error && <p style={{ color: "red" }}>{error}</p>} {/* ✅ Displays error messages */}
+        {error && <p className="error-message">{error}</p>} 
         <button className="login-button" type="submit">Login</button>
         <button className="signup-button" type="button" onClick={() => navigate("/signup")}>New here? Sign up</button>
       </form>
 
-      {/* 🔗 Forgot & Reset Password Links */}
-      <div style={{ marginTop: "10px" }}>
-        {/* <p>
-          <a href="/forgot-password" style={{ color: "blue", cursor: "pointer" }}>
-            Forgot Password?
-          </a>
-        </p> */}
+      <div className="forgot-password-links">
         <p>
-          <a className="reset-password"href="/reset-password">
+          <a className="reset-password" href="/reset-password">
             Reset Password
           </a>
         </p>
