@@ -1,14 +1,22 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../VirtualGarden.css"; // Keep external styles intact
 import Logo from "../assets/VirtualGrowLogo.png";
-import React from 'react';
+import React, { useState } from 'react';
 import { UseAuth } from "../context/authcontext.jsx";
 import { FaUserCircle } from "react-icons/fa"; // Import the face icon
 
 const Navbar = () => {
-  const { user, logout, login, accessToken } = UseAuth();
+  const { user, logout, accessToken } = UseAuth();
   const navigate = useNavigate();
   const location = useLocation(); // Get current path
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Check if on login or signup page
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+
+  if (isAuthPage) {
+    return <nav className="navbar"></nav>; // Empty navbar on login/signup page
+  }
 
   return (
     <nav className="navbar">
@@ -20,48 +28,70 @@ const Navbar = () => {
           onClick={() => navigate("/")}
         />
       </div>
-
+      
       <div className="userLogin">
-        {!accessToken ? ( 
+        {location.pathname === "/" && (
           <>
-            <Link to="/login">Login</Link>
-          </>
-        ) : (
-          <>
-            <Link to="/userprofile">My Space</Link>
-            <Link to="/logout" onClick={logout}>Logout</Link>
+            <Link to="/aboutUs">About Us</Link>
+            <div className="profile-dropdown">
+              <FaUserCircle 
+                size={28} 
+                className="profile-icon" 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              />
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  {!accessToken ? (
+                    <>
+                      <Link to="/login">Login</Link>
+                      <Link to="/signup">Signup</Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/userprofile">User Profile</Link>
+                      <Link to="/logout" onClick={logout}>Logout</Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </>
         )}
-
-        <Link to="/aboutUs">About Us</Link>
-
-        {/* Restrict these pages to logged-in users */}
+        
         {accessToken && (
           <>
-            <Link to="/gardenscapes">Garden Scape</Link>
-            <Link to="/gardenpicks">Garden Picks</Link>
+            <Link to="/gardenscapes">Gardenscapes</Link>
+            <Link to="/gardenpicks">Gardenpicks</Link>
           </>
         )}
-
-        {/* Show user face icon on the home page when logged in */}
-        {location.pathname === "/" && accessToken && (
-          <Link to="/userprofile" className="profile-icon">
-            <FaUserCircle size={28} />
-          </Link>
-        )}
       </div>
-
-      {/* Embedded CSS to only handle profile icon */}
+      
       <style>
         {`
-          .profile-icon {
-            color: black;
-            margin-left: 10px;
-            transition: color 0.3s ease;
+          .profile-dropdown {
+            position: relative;
+            display: inline-block;
           }
-
-          .profile-icon:hover {
-            color: gray;
+          .dropdown-menu {
+            position: absolute;
+            right: 0;
+            background: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+          }
+          .dropdown-menu a {
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+          }
+          .dropdown-menu a:hover {
+            background: lightgray;
+          }
+          .profile-icon {
+            cursor: pointer;
+            margin-left: 10px;
           }
         `}
       </style>
