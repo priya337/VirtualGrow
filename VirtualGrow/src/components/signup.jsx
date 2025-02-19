@@ -1,16 +1,35 @@
-import { useState, useContext } from "react";
-import { AuthContext } from "../context/authcontext.jsx"; // ✅ Import AuthContext
-import { useNavigate } from "react-router-dom";
-import ClipLoader from "react-spinners/ClipLoader"; 
+import React, { useState, useEffect, useContext } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
+import { AuthContext } from "../context/authcontext"; // ✅ Import your AuthContext
 
-const BACKEND_URL = "https://virtualgrow-server.onrender.com";
+function buildPlantPrompt(ExteriorPlants, InteriorPlants) {
+  if (ExteriorPlants && InteriorPlants) {
+    return "a combination of lush exterior and interior plants";
+  } else if (ExteriorPlants) {
+    return "beautiful exterior garden plants";
+  } else if (InteriorPlants) {
+    return "cozy interior house plants";
+  } else {
+    return "some random plants";
+  }
+}
+
+function getPollinationsUrl(prompt) {
+  const descriptors = ["vibrant", "serene", "colorful", "dreamy", "realistic"];
+  const randomDescriptor =
+    descriptors[Math.floor(Math.random() * descriptors.length)];
+
+  const finalPrompt = `${randomDescriptor} ${prompt}`.trim();
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}`;
+}
 
 const Signup = () => {
+  // ✅ Access your AuthContext
   const { signup } = useContext(AuthContext);
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-  
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -20,67 +39,57 @@ const Signup = () => {
     InteriorPlants: false,
   });
 
-  // ✅ Handle Input Changes
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  // Build a new preview whenever ExteriorPlants/InteriorPlants changes
+  useEffect(() => {
+    const prompt = buildPlantPrompt(form.ExteriorPlants, form.InteriorPlants);
+    const url = getPollinationsUrl(prompt);
+    setPreviewUrl(url);
+  }, [form.ExteriorPlants, form.InteriorPlants]);
+
+  // Handle input/checkbox changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-    // ✅ Limit password length to 18 characters
-    if (name === "password" && value.length > 18) {
-      setMessage("⚠️ Password cannot exceed 18 characters.");
-      return;
-    } else {
-      setMessage("");
-    }
-
     setForm({
       ...form,
       [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  // ✅ Handle Signup Submission
+  // Handle form submission
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage("");
 
     try {
-      const result = await signup(form);
+      // Combine form data with the AI-generated photo URL
+      const payload = {
+        ...form,
+        photo: previewUrl,
+      };
+
+      // ✅ Call the signup function from AuthContext
+      const result = await signup(payload);
+
       if (result === "success") {
-        navigate("/login");
+        setMessage("✅ Signed up successfully!");
       } else {
-        setMessage("❌ Signup failed. Try again.");
+        setMessage(`❌ Signup failed: ${result}`);
       }
     } catch (error) {
       setMessage("❌ Error signing up.");
     }
+
     setLoading(false);
   };
 
   return (
-    <div
-      style={{
-        background: "url('/images/nature.jpg') no-repeat center center",
-        backgroundSize: "cover",
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div
-        style={{
-          background: "rgba(255, 255, 255, 0.9)", // Light overlay
-          padding: "20px",
-          borderRadius: "10px",
-          boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
-          width: "400px",
-          textAlign: "center",
-        }}
-      >
-        <h2 style={{ color: "#2F855A", fontSize: "22px" }}>Sign Up</h2>
-
-        <form onSubmit={handleSignup} style={{ marginTop: "15px" }}>
+    <div style={containerStyle}>
+      <div style={formStyle}>
+        <h2 style={{ color: "#2F855A" }}>Sign Up</h2>
+        <form onSubmit={handleSignup}>
           <input
             type="text"
             name="name"
@@ -90,7 +99,6 @@ const Signup = () => {
             required
             style={inputStyle}
           />
-
           <input
             type="email"
             name="email"
@@ -100,39 +108,56 @@ const Signup = () => {
             required
             style={inputStyle}
           />
-
-          {/* ✅ Password Field with Max Length */}
           <input
             type="password"
             name="password"
-            placeholder="Password (Max 18 characters)"
+            placeholder="Password"
             value={form.password}
             onChange={handleChange}
             required
-            maxLength="18" // ✅ Limits input to 18 characters
             style={inputStyle}
           />
-
           <input
             type="text"
             name="location"
             placeholder="Location"
             value={form.location}
             onChange={handleChange}
-            required
             style={inputStyle}
           />
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <label style={checkboxStyle}>
-              <input type="checkbox" name="ExteriorPlants" onChange={handleChange} /> Interested in Exterior Plants
-            </label>
-            <label style={checkboxStyle}>
-              <input type="checkbox" name="InteriorPlants" onChange={handleChange} /> Interested in Interior Plants
-            </label>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ marginRight: "20px" }}>
+              <label style={{ display: "block" }}>
+                <input
+                  type="checkbox"
+                  name="ExteriorPlants"
+                  checked={form.ExteriorPlants}
+                  onChange={handleChange}
+                />{" "}
+                Exterior Plants
+              </label>
+              <label style={{ display: "block" }}>
+                <input
+                  type="checkbox"
+                  name="InteriorPlants"
+                  checked={form.InteriorPlants}
+                  onChange={handleChange}
+                />{" "}
+                Interior Plants
+              </label>
+            </div>
+
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="Generated Preview"
+                style={{ width: "80px", height: "80px", objectFit: "cover" }}
+              />
+            )}
           </div>
 
-          {message && <p style={{ color: "red", marginBottom: "10px" }}>{message}</p>}
+          {message && <p style={{ color: "red" }}>{message}</p>}
 
           <button type="submit" style={buttonStyle} disabled={loading}>
             {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
@@ -143,7 +168,26 @@ const Signup = () => {
   );
 };
 
-// ✅ Reusable Styles
+// Basic styles
+const containerStyle = {
+  background: "url('/images/nature.jpg') no-repeat center center",
+  backgroundSize: "cover",
+  width: "100vw",
+  height: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+const formStyle = {
+  background: "rgba(255, 255, 255, 0.9)",
+  padding: "20px",
+  borderRadius: "10px",
+  boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+  width: "400px",
+  textAlign: "center",
+};
+
 const inputStyle = {
   width: "100%",
   padding: "10px",
@@ -151,11 +195,6 @@ const inputStyle = {
   border: "1px solid #CBD5E0",
   outline: "none",
   marginBottom: "10px",
-};
-
-const checkboxStyle = {
-  fontSize: "14px",
-  marginBottom: "5px",
 };
 
 const buttonStyle = {
@@ -167,6 +206,7 @@ const buttonStyle = {
   border: "none",
   cursor: "pointer",
   transition: "background 0.3s",
+  marginTop: "10px",
 };
 
 export default Signup;
