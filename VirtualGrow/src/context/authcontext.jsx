@@ -1,8 +1,11 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import API from "../components/api/api"; // ✅ Ensure correct import path
+import axios from "axios"; // Replacing API with axios
 
 export const AuthContext = createContext();
 export const UseAuth = () => useContext(AuthContext);
+
+// Hardcoded Backend URL
+const BACKEND_URL = "https://virtualgrow-server.onrender.com";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -15,14 +18,14 @@ export const AuthProvider = ({ children }) => {
   // ✅ Auto-login if token exists
   useEffect(() => {
     if (accessToken) {
-      const storedEmail = localStorage.getItem("userEmail"); // ✅ Store email after login
+      const storedEmail = localStorage.getItem("userEmail");
       if (!storedEmail) {
         console.warn("⚠️ No email stored in localStorage. Cannot fetch profile.");
         return;
       }
 
       console.log(`✅ Fetching user profile for: ${storedEmail}`);
-      API.get(`/users/profile/${storedEmail}`, {
+      axios.get(`${BACKEND_URL}/users/profile/${storedEmail}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
         .then((res) => {
@@ -39,27 +42,27 @@ export const AuthProvider = ({ children }) => {
   // 🔑 Login Function
   const login = async (email, password) => {
     try {
-      const { data } = await API.post("/users/login", { email, password });
-  
+      const { data } = await axios.post(`${BACKEND_URL}/users/login`, { email, password });
+
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("userEmail", email);
-  
+
       setAccessToken(data.accessToken);
       setUser(data.user);
-  
+
       console.log("✅ Login successful");
-      return "success"; // ✅ Return success
+      return "success";
     } catch (error) {
       if (error.response?.status === 404) {
         console.error("❌ User not found");
-        return "user_not_found"; // ✅ Return user not found
+        return "user_not_found";
       } else if (error.response?.status === 403) {
         console.error("⚠️ Invalid credentials");
-        return "invalid_credentials"; // ✅ Return invalid credentials
+        return "invalid_credentials";
       } else {
         console.error("❌ Login failed:", error.response?.data || error.message);
-        return "error"; // ✅ Return generic error
+        return "error";
       }
     }
   };
@@ -74,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       console.log("🔄 Refreshing access token...");
-      const { data } = await API.post("/users/refresh-token", { refreshToken });
+      const { data } = await axios.post(`${BACKEND_URL}/users/refresh-token`, { refreshToken });
 
       localStorage.setItem("accessToken", data.accessToken);
       setAccessToken(data.accessToken);
@@ -91,7 +94,7 @@ export const AuthProvider = ({ children }) => {
     console.log("🚪 Logging out. Clearing tokens...");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userEmail"); // ✅ Remove stored email
+    localStorage.removeItem("userEmail");
     setUser(null);
     setAccessToken(null);
     console.log("✅ Tokens removed, user logged out.");
@@ -104,8 +107,8 @@ export const AuthProvider = ({ children }) => {
         console.warn("⚠️ No email stored in localStorage. Cannot fetch profile.");
         return;
       }
-  
-      API.get(`/users/profile/${storedEmail}`, {
+
+      axios.get(`${BACKEND_URL}/users/profile/${storedEmail}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
         .then((res) => {
@@ -131,3 +134,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+s
