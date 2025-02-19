@@ -136,7 +136,7 @@ const Signup = () => {
           />
 
           {/* ✅ Fixed: Age field now allows entry and validation happens on form submission */}
-          <input
+          {/* <input
             type="number"
             name="age"
             placeholder="Age (18+ only)"
@@ -146,7 +146,7 @@ const Signup = () => {
             min="18" // ✅ Ensures value is 18 or more
             max="100" // ✅ Sets an upper limit
             style={inputStyle}
-          />
+          /> */}
 
           <input
             type="text"
