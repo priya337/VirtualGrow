@@ -14,10 +14,6 @@ const Navbar = () => {
   // Check if on login or signup page
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
 
-  if (isAuthPage) {
-    return <nav className="navbar"></nav>; // Empty navbar on login/signup page
-  }
-
   return (
     <nav className="navbar">
       <div className="logoAndName">
@@ -30,7 +26,12 @@ const Navbar = () => {
       </div>
       
       <div className="userLogin">
-        {location.pathname === "/" && (
+        {isAuthPage ? (
+          <>
+            <Link to="/">Home</Link>
+            <Link to="/aboutUs">About Us</Link>
+          </>
+        ) : location.pathname === "/" ? (
           <>
             <Link to="/aboutUs">About Us</Link>
             <div className="profile-dropdown">
@@ -41,27 +42,30 @@ const Navbar = () => {
               />
               {dropdownOpen && (
                 <div className="dropdown-menu">
-                  {!accessToken ? (
-                    <>
-                      <Link to="/login">Login</Link>
-                      <Link to="/signup">Signup</Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link to="/userprofile">User Profile</Link>
-                      <Link to="/logout" onClick={logout}>Logout</Link>
-                    </>
-                  )}
+                  <Link to="/login">Login</Link>
+                  <Link to="/signup">Signup</Link>
                 </div>
               )}
             </div>
           </>
-        )}
-        
-        {accessToken && (
+        ) : (
           <>
             <Link to="/gardenscapes">Gardenscapes</Link>
             <Link to="/gardenpicks">Gardenpicks</Link>
+            <div className="profile-dropdown">
+              <FaUserCircle 
+                size={28} 
+                className="profile-icon" 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              />
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <Link to="/userprofile">User Profile</Link>
+                  <Link to="/logout" onClick={logout}>Logout</Link>
+                </div>
+              )}
+            </div>
+            <Link to="/aboutUs">About Us</Link>
           </>
         )}
       </div>
