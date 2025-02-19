@@ -1,10 +1,10 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import axios from "axios"; // Replacing API with axios
+import axios from "axios"; // ✅ Using axios directly
 
 export const AuthContext = createContext();
 export const UseAuth = () => useContext(AuthContext);
 
-// Hardcoded Backend URL
+// ✅ Hardcoded Backend URL
 const BACKEND_URL = "https://virtualgrow-server.onrender.com";
 
 export const AuthProvider = ({ children }) => {
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       console.log(`✅ Fetching user profile for: ${storedEmail}`);
-      axios.get(`${BACKEND_URL}/users/profile/${storedEmail}`, {
+      axios.get(`${BACKEND_URL}/api/users/profile/${storedEmail}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
         .then((res) => {
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   // 🔑 Login Function
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post(`${BACKEND_URL}/users/login`, { email, password });
+      const { data } = await axios.post(`${BACKEND_URL}/api/users/login`, { email, password });
 
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
@@ -67,6 +67,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // 🆕 🔐 Signup Function
+  const signup = async (userData) => {
+    try {
+      await axios.post(`${BACKEND_URL}/api/users/signup`, userData);
+      console.log("✅ Signup successful");
+      return "success";
+    } catch (error) {
+      console.error("❌ Signup failed:", error.response?.data || error.message);
+      return error.response?.data?.error || "error";
+    }
+  };
+
   // 🔄 Refresh Token Function
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -77,7 +89,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       console.log("🔄 Refreshing access token...");
-      const { data } = await axios.post(`${BACKEND_URL}/users/refresh-token`, { refreshToken });
+      const { data } = await axios.post(`${BACKEND_URL}/api/users/refresh-token`, { refreshToken });
 
       localStorage.setItem("accessToken", data.accessToken);
       setAccessToken(data.accessToken);
@@ -89,49 +101,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔓 Logout Function
-  const logout = () => {
-    console.log("🚪 Logging out. Clearing tokens...");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userEmail");
-    setUser(null);
-    setAccessToken(null);
-    console.log("✅ Tokens removed, user logged out.");
+  // 🆕 🔓 Logout Function (Updated to Call Backend)
+  const logout = async () => {
+    try {
+      await axios.post(`${BACKEND_URL}/api/users/logout`, {}, { withCredentials: true }); // ✅ Logout API call
+      console.log("🚪 Logging out. Clearing tokens...");
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userEmail");
+      setUser(null);
+      setAccessToken(null);
+
+      console.log("✅ Tokens removed, user logged out.");
+    } catch (error) {
+      console.error("❌ Logout failed:", error.response?.data || error.message);
+    }
   };
 
-  useEffect(() => {
-    if (accessToken) {
-      const storedEmail = localStorage.getItem("userEmail");
-      if (!storedEmail) {
-        console.warn("⚠️ No email stored in localStorage. Cannot fetch profile.");
-        return;
-      }
-
-      axios.get(`${BACKEND_URL}/users/profile/${storedEmail}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
-        .then((res) => {
-          console.log("✅ User profile fetched successfully:", res.data);
-          setUser(res.data);
-        })
-        .catch((error) => {
-          if (error.response?.status === 404) {
-            console.error("❌ User not found. Please sign up first.");
-          } else if (error.response?.status === 403) {
-            console.error("❌ Unauthorized access. Logging out.");
-            logout();
-          } else {
-            console.error("❌ Error fetching user profile:", error.response?.data || error.message);
-          }
-        });
-    }
-  }, [accessToken]);
-
   return (
-    <AuthContext.Provider value={{ user, login, logout, accessToken, refreshAccessToken }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken }}>
       {children}
     </AuthContext.Provider>
   );
 };
-s
