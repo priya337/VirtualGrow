@@ -1,6 +1,9 @@
 import { useState } from "react";
-import API from "../components/api/api"; // Ensure correct import path
+import axios from "axios"; // ✅ Using axios directly
 import { useNavigate } from "react-router-dom";
+
+// ✅ Hardcoded backend URL
+const BACKEND_URL = "https://virtualgrow-server.onrender.com";
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -24,10 +27,10 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await API.post("/users/signup", form);
+      await axios.post(`${BACKEND_URL}/users/signup`, form);
       navigate("/login");
     } catch (error) {
-      console.error("Signup failed", error.response?.data);
+      console.error("❌ Signup failed:", error.response?.data || error.message);
     }
   };
 
@@ -74,7 +77,7 @@ const Signup = () => {
         <button type="submit" className="signup-button">Sign Up</button>
       </form>
 
-      {/* Embedded CSS for Full Background and Button Positioning */}
+      {/* Embedded CSS */}
       <style>
         {`
           .register-area {
@@ -82,7 +85,7 @@ const Signup = () => {
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-image: url('/assets/background.jpg'); /* Replace with actual path */
+            background-image: url('/assets/background.jpg'); 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
