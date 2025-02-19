@@ -116,14 +116,17 @@ const deleteUserProfile = async () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include' // Ensures cookies are sent with the request
+      // Remove credentials: 'include' if you're not using cookies
+      body: JSON.stringify({ email: 'user@example.com' }) 
     });
 
     if (!response.ok) {
       throw new Error('Failed to delete profile');
     }
 
-    logout(); // Log the user out after profile deletion
+    // You can still log the user out or redirect after deletion
+    // logout();
+    console.log('Profile deleted successfully');
   } catch (error) {
     console.error('Error deleting profile:', error);
   }
