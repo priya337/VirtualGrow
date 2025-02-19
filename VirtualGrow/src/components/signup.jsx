@@ -1,10 +1,17 @@
 import { useState, useContext } from "react";
-import { AuthContext } from "../context/authcontext.jsx"; // ✅ Using AuthContext
+import { AuthContext } from "../context/authcontext.jsx"; // ✅ Import AuthContext
 import { useNavigate } from "react-router-dom";
-// import "./src/VirtualGarden.css"; // ✅ Import global CSS
+import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader"; 
+
+const BACKEND_URL = "https://virtualgrow-server.onrender.com";
 
 const Signup = () => {
-  const { signup } = useContext(AuthContext); // ✅ Using signup function from AuthContext
+  const { signup } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+  
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -16,69 +23,213 @@ const Signup = () => {
     InteriorPlants: false,
   });
 
-  const navigate = useNavigate();
-
+  // ✅ Handle Input Changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    if (name === "age" && value < 18) {
+      setMessage("⚠️ Age must be 18 or above.");
+      return;
+    } else {
+      setMessage("");
+    }
+
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
+  // ✅ Handle Photo Upload
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("photo", file);
+
+    try {
+      const { data } = await axios.post(`${BACKEND_URL}/api/users/upload-photo`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setForm({ ...form, photo: data.photoPath }); // ✅ Save path to MongoDB
+      setMessage("✅ Photo uploaded successfully.");
+    } catch (error) {
+      setMessage("❌ Error uploading photo. Please try again.");
+    }
+    setLoading(false);
+  };
+
+  // ✅ Handle Signup Submission
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    if (form.age < 18) {
+      setMessage("⚠️ Age must be 18 or above.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const result = await signup(form); 
+      const result = await signup(form);
       if (result === "success") {
         navigate("/login");
       } else {
-        console.error("❌ Signup failed:", result);
+        setMessage("❌ Signup failed. Try again.");
       }
     } catch (error) {
-      console.error("❌ Signup error:", error);
+      setMessage("❌ Error signing up.");
     }
+    setLoading(false);
   };
 
   return (
-    <div className="signup-page">
-      <form className="signup-form" onSubmit={handleSignup}>
-        <h2 className="signup-title">Sign Up</h2>
-        <div className="form-fields">
-          <div className="row">
-            <label htmlFor="name">Name</label>
-            <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
-          </div>
-          <div className="row">
-            <label htmlFor="email">Email</label>
-            <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-          </div>
-          <div className="row">
-            <label htmlFor="password">Password</label>
-            <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-          </div>
-          <div className="row">
-            <label htmlFor="age">Age</label>
-            <input type="number" name="age" placeholder="Age" onChange={handleChange} required />
-          </div>
-          <div className="row">
-            <label htmlFor="location">Location</label>
-            <input type="text" name="location" placeholder="Location" onChange={handleChange} />
-          </div>
-          <div className="row">
-            <label htmlFor="photo">Photo URL</label>
-            <input type="text" name="photo" placeholder="Photo URL" onChange={handleChange} required />
-          </div>
-          <div className="row-checkboxes">
-            <label>
-              <input type="checkbox" name="ExteriorPlants" onChange={handleChange} />
-              Interested in Exterior Plants
+    <div
+      style={{
+        background: "url('/images/nature.jpg') no-repeat center center",
+        backgroundSize: "cover",
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          background: "rgba(255, 255, 255, 0.9)", // Light overlay
+          padding: "20px",
+          borderRadius: "10px",
+          boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+          width: "400px",
+          textAlign: "center",
+        }}
+      >
+        <h2 style={{ color: "#2F855A", fontSize: "22px" }}>Sign Up</h2>
+
+        <form onSubmit={handleSignup} style={{ marginTop: "15px" }}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #CBD5E0",
+              outline: "none",
+              marginBottom: "10px",
+            }}
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #CBD5E0",
+              outline: "none",
+              marginBottom: "10px",
+            }}
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #CBD5E0",
+              outline: "none",
+              marginBottom: "10px",
+            }}
+          />
+
+          <input
+            type="number"
+            name="age"
+            placeholder="Age (18+ only)"
+            value={form.age}
+            onChange={handleChange}
+            required
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #CBD5E0",
+              outline: "none",
+              marginBottom: "10px",
+            }}
+          />
+
+          <input
+            type="text"
+            name="location"
+            placeholder="Location"
+            value={form.location}
+            onChange={handleChange}
+            required
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #CBD5E0",
+              outline: "none",
+              marginBottom: "10px",
+            }}
+          />
+
+          {/* ✅ File Upload for Profile Photo */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            style={{ marginBottom: "10px" }}
+          />
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+            <label style={{ fontSize: "14px", marginBottom: "5px" }}>
+              <input type="checkbox" name="ExteriorPlants" onChange={handleChange} /> Interested in Exterior Plants
             </label>
-            <label>
-              <input type="checkbox" name="InteriorPlants" onChange={handleChange} />
-              Interested in Interior Plants
+            <label style={{ fontSize: "14px", marginBottom: "10px" }}>
+              <input type="checkbox" name="InteriorPlants" onChange={handleChange} /> Interested in Interior Plants
             </label>
           </div>
-        </div>
-        <button type="submit" className="signup-button">Sign Up</button>
-      </form>
+
+          {message && <p style={{ color: "red", marginBottom: "10px" }}>{message}</p>}
+
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              background: "#38A169",
+              color: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "none",
+              cursor: "pointer",
+              transition: "background 0.3s",
+            }}
+            disabled={loading}
+          >
+            {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
