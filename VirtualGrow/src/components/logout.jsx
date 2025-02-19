@@ -53,9 +53,9 @@ const Logout = () => {
           Thank you for visiting! We look forward to seeing you again soon. 🍃
         </p>
 
-        {/* ✅ Button to Homepage */}
+        {/* ✅ Button to LoginPage */}
         <button
-          onClick={() => window.location.href = "https://virtual-grow.netlify.app/"}
+          onClick={() => window.location.href = "https://virtual-grow.netlify.app/login"}
           style={{
             width: "100%",
             background: "#38A169",
