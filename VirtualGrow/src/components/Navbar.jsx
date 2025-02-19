@@ -1,9 +1,9 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../VirtualGarden.css"; // Keep external styles intact
 import Logo from "../assets/VirtualGrowLogo.png";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { UseAuth } from "../context/authcontext.jsx";
-import { FaUserCircle } from "react-icons/fa"; // Import the face icon
+import { FaUserCircle } from "react-icons/fa"; // Import profile icon
 
 const Navbar = () => {
   const { user, logout, accessToken } = UseAuth();
@@ -17,10 +17,18 @@ const Navbar = () => {
     }
   }, [accessToken]);
 
-  const isAuthPage = location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/logout";
-  const isAboutUs = location.pathname === "/aboutUs";
+  // Pages where the Navbar should be completely hidden
+  const hideNavbar = location.pathname === "/reset-password";
+
+  // Define page conditions
   const isHomePage = location.pathname === "/";
-  const isLoggedOut = !accessToken && (isHomePage || isAboutUs);
+  const isAboutUs = location.pathname === "/aboutUs";
+  const isAuthPage = ["/login", "/signup", "/logout"].includes(location.pathname);
+  const isLoggedOut = !accessToken;
+
+  if (hideNavbar) {
+    return null; // ✅ Hide the entire Navbar on /reset-password
+  }
 
   return (
     <nav className="navbar">
@@ -36,9 +44,9 @@ const Navbar = () => {
       <div className="userLogin">
         {!isAuthPage && (
           <>
-            {(isHomePage || isAboutUs) && (
+            {/* ✅ Home Page: Show "About Us" + Profile Icon */}
+            {isHomePage && (
               <>
-                <Link to="/">Home</Link>
                 <Link to="/aboutUs">About Us</Link>
                 <div className="profile-dropdown">
                   <FaUserCircle 
@@ -55,7 +63,29 @@ const Navbar = () => {
                 </div>
               </>
             )}
-            {accessToken && (
+
+            {/* ✅ About Us Page: Show "Home" + Profile Icon */}
+            {isAboutUs && (
+              <>
+                <Link to="/">Home</Link>
+                <div className="profile-dropdown">
+                  <FaUserCircle 
+                    size={28} 
+                    className="profile-icon" 
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  />
+                  {dropdownOpen && (
+                    <div className="dropdown-menu">
+                      <Link to="/login">Login</Link>
+                      <Link to="/signup">Signup</Link>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* ✅ If Logged In, Show User Options (NOT on Home/AboutUs) */}
+            {accessToken && !isHomePage && !isAboutUs && (
               <>
                 <Link to="/gardenscapes">Gardenscapes</Link>
                 <Link to="/gardenpicks">Gardenpicks</Link>
@@ -77,7 +107,8 @@ const Navbar = () => {
           </>
         )}
       </div>
-      
+
+      {/* ✅ Style Fixes */}
       <style>
         {`
           .profile-dropdown {
