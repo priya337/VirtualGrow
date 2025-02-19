@@ -41,7 +41,7 @@ const Dashboard = () => {
   return (
     <div
       style={{
-        background: "url('/images/nature.jpg') no-repeat center center",
+        background: "url('/images/basket.jpg') no-repeat center center",
         backgroundSize: "cover",
         width: "100vw",
         height: "100vh",
@@ -52,7 +52,7 @@ const Dashboard = () => {
     >
       <div
         style={{
-          background: "rgba(255, 255, 255, 0.9)", // Light overlay
+          background: "rgba(255, 255, 255, 0.9)", // Light overlay for readability
           padding: "20px",
           borderRadius: "10px",
           boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
@@ -60,27 +60,10 @@ const Dashboard = () => {
           textAlign: "center",
         }}
       >
-        {/* ✅ Square User Profile Picture */}
-        <img
-          src={user.photo ? user.photo : "/images/default-avatar.png"} // ✅ Show user photo or placeholder
-          alt="User Avatar"
-          style={{
-            width: "120px",
-            height: "120px",
-            objectFit: "cover",
-            border: "3px solid #2F855A",
-            marginBottom: "10px",
-            display: "block",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        />
-
         <h2 style={{ color: "#2F855A", fontSize: "22px" }}>Welcome, {user.name}!</h2>
 
         <div style={{ textAlign: "left", marginTop: "15px", fontSize: "16px" }}>
           <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Age:</strong> {user.age}</p>
           <p><strong>Location:</strong> {user.location || "Not provided"}</p>
           <p>
             <strong>Interested in Exterior Plants:</strong> {user.ExteriorPlants ? "Yes" : "No"}
