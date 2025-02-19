@@ -17,10 +17,10 @@ const Navbar = () => {
     }
   }, [accessToken]);
 
-  // Check if on login, signup, or logout page
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/logout";
   const isAboutUs = location.pathname === "/aboutUs";
-  const isLoggedOut = !accessToken && (location.pathname === "/" || isAboutUs);
+  const isHomePage = location.pathname === "/";
+  const isLoggedOut = !accessToken && (isHomePage || isAboutUs);
 
   return (
     <nav className="navbar">
@@ -34,43 +34,48 @@ const Navbar = () => {
       </div>
       
       <div className="userLogin">
-        {isAuthPage ? null : isLoggedOut ? (
+        {!isAuthPage && (
           <>
-            <Link to="/">Home</Link>
-            <Link to="/aboutUs">About Us</Link>
-            <div className="profile-dropdown">
-              <FaUserCircle 
-                size={28} 
-                className="profile-icon" 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              />
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/login">Login</Link>
-                  <Link to="/signup">Signup</Link>
+            {(isHomePage || isAboutUs) && (
+              <>
+                <Link to="/">Home</Link>
+                <Link to="/aboutUs">About Us</Link>
+                <div className="profile-dropdown">
+                  <FaUserCircle 
+                    size={28} 
+                    className="profile-icon" 
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  />
+                  {dropdownOpen && (
+                    <div className="dropdown-menu">
+                      <Link to="/login">Login</Link>
+                      <Link to="/signup">Signup</Link>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </>
-        ) : accessToken ? (
-          <>
-            <Link to="/gardenscapes">Gardenscapes</Link>
-            <Link to="/gardenpicks">Gardenpicks</Link>
-            <div className="profile-dropdown" style={{ marginLeft: 'auto' }}>
-              <FaUserCircle 
-                size={28} 
-                className="profile-icon" 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              />
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/userprofile">User Profile</Link>
-                  <Link to="/logout" onClick={() => {logout(); setDropdownOpen(false); navigate("/logout");}}>Logout</Link>
+              </>
+            )}
+            {accessToken && (
+              <>
+                <Link to="/gardenscapes">Gardenscapes</Link>
+                <Link to="/gardenpicks">Gardenpicks</Link>
+                <div className="profile-dropdown" style={{ marginLeft: 'auto' }}>
+                  <FaUserCircle 
+                    size={28} 
+                    className="profile-icon" 
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  />
+                  {dropdownOpen && (
+                    <div className="dropdown-menu">
+                      <Link to="/userprofile">User Profile</Link>
+                      <Link to="/logout" onClick={() => {logout(); setDropdownOpen(false); navigate("/logout");}}>Logout</Link>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </>
-        ) : null}
+        )}
       </div>
       
       <style>
