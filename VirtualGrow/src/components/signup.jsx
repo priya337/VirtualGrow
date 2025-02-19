@@ -16,7 +16,7 @@ const Signup = () => {
     email: "",
     password: "",
     name: "",
-    age: "",
+    age: "", // ✅ Default to empty so user can type
     location: "",
     photo: "",
     ExteriorPlants: false,
@@ -27,17 +27,10 @@ const Signup = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (name === "age") {
-      const ageValue = parseInt(value, 10);
-      if (ageValue < 18) {
-        setMessage("⚠️ Age must be 18 or above.");
-        return;
-      } else {
-        setMessage("");
-      }
-    }
-
-    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+    setForm({
+      ...form,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
   // ✅ Handle Photo Upload (Optional)
@@ -67,7 +60,8 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (parseInt(form.age, 10) < 18) {
+    const userAge = parseInt(form.age, 10);
+    if (isNaN(userAge) || userAge < 18) {
       setMessage("⚠️ Age must be 18 or above.");
       setLoading(false);
       return;
@@ -141,6 +135,7 @@ const Signup = () => {
             style={inputStyle}
           />
 
+          {/* ✅ Fixed: Age field now allows entry and validation happens on form submission */}
           <input
             type="number"
             name="age"
@@ -148,6 +143,8 @@ const Signup = () => {
             value={form.age}
             onChange={handleChange}
             required
+            min="18" // ✅ Ensures value is 18 or more
+            max="100" // ✅ Sets an upper limit
             style={inputStyle}
           />
 
