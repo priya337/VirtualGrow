@@ -134,29 +134,29 @@ const deleteUserProfile = async () => {
 
 
   
-  // 🆕 🔓 Logout Function (Updated to Call Backend)
-  const logout = async () => {
-    try {
-      console.log("🔍 Checking Refresh Token Before Logout:", localStorage.getItem("refreshToken"));
-      
-      await axios.post(`${BACKEND_URL}/api/users/logout`, {}, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-      });
-  
-      console.log("🚪 Logging out. Clearing tokens...");
-  
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("userEmail");
-      setUser(null);
-      setAccessToken(null);
-  
-      console.log("✅ Tokens removed, user logged out.");
-    } catch (error) {
-      console.error("❌ Logout failed:", error.response?.data || error.message);
-    }
-  };
+const logout = async () => {
+  try {
+    console.log("🔍 Attempting logout...");
+
+    // Send POST request to logout route, with credentials for cookies
+    await axios.post(`${BACKEND_URL}/api/users/logout`, {}, {
+      withCredentials: true
+    });
+
+    // Clear any local user state if you want
+    setUser(null);
+
+    // If you previously stored tokens in localStorage but no longer need them:
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userEmail");
+
+    console.log("✅ Logged out successfully, cookies cleared on server.");
+  } catch (error) {
+    console.error("❌ Logout failed:", error.response?.data || error.message);
+  }
+};
+
   
 
   return (
