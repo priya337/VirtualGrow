@@ -49,13 +49,13 @@ const Logout = () => {
           <>
             {/* ✅ User Goodbye Message */}
             <h2 style={{ color: "#2F855A", fontSize: "22px" }}>
-              Goodbye, {user.name}! 👋
+              See You Soon, {user.name}! 👋
             </h2>
             <p style={{ fontSize: "14px", color: "#4A5568", marginBottom: "15px" }}>
-              We hope to see you back soon. 🌿
+              We hope you had a great time. Come back soon to continue your journey with us! 🌱
             </p>
 
-            {/* ✅ Logout Button */}
+            {/* ✅ Logout Button with new text */}
             <button
               onClick={handleLogout}
               style={{
@@ -70,18 +70,18 @@ const Logout = () => {
               }}
               disabled={loading}
             >
-              {loading ? <ClipLoader size={20} color="white" /> : "Logout"}
+              {loading ? <ClipLoader size={20} color="white" /> : "Return to Home"}
             </button>
           </>
         ) : (
           <>
             {/* ✅ Logged Out Message */}
-            <h2 style={{ color: "#2F855A", fontSize: "22px" }}>You have logged out! 🌱</h2>
+            <h2 style={{ color: "#2F855A", fontSize: "22px" }}>You have successfully logged out! 🌿</h2>
             <p style={{ fontSize: "14px", color: "#4A5568", marginBottom: "15px" }}>
-              Thanks for visiting. Come back soon to continue growing your virtual garden. 🌿
+              Thanks for visiting. We look forward to welcoming you back soon! 🍃
             </p>
 
-            {/* ✅ Button to Login Page */}
+            {/* ✅ Button to Login Page with new text */}
             <button
               onClick={() => navigate("/login")}
               style={{
@@ -95,7 +95,7 @@ const Logout = () => {
                 transition: "background 0.3s",
               }}
             >
-              Go to Login
+              Take me back to Login
             </button>
           </>
         )}
