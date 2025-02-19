@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../VirtualGarden.css"; // Keep external styles intact
 import Logo from "../assets/VirtualGrowLogo.png";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UseAuth } from "../context/authcontext.jsx";
 import { FaUserCircle } from "react-icons/fa"; // Import the face icon
 
@@ -14,6 +14,12 @@ const Navbar = () => {
   // Check if on login or signup page
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
   const isAboutUs = location.pathname === "/aboutUs";
+
+  useEffect(() => {
+    if (!accessToken) {
+      setDropdownOpen(false);
+    }
+  }, [accessToken]);
 
   return (
     <nav className="navbar">
