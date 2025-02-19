@@ -26,18 +26,21 @@ const Signup = () => {
   // ✅ Handle Input Changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
-    if (name === "age" && value < 18) {
-      setMessage("⚠️ Age must be 18 or above.");
-      return;
-    } else {
-      setMessage("");
+
+    if (name === "age") {
+      const ageValue = parseInt(value, 10);
+      if (ageValue < 18) {
+        setMessage("⚠️ Age must be 18 or above.");
+        return;
+      } else {
+        setMessage("");
+      }
     }
 
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
-  // ✅ Handle Photo Upload
+  // ✅ Handle Photo Upload (Optional)
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -52,7 +55,7 @@ const Signup = () => {
       });
 
       setForm({ ...form, photo: data.photoPath }); // ✅ Save path to MongoDB
-      setMessage("✅ Photo uploaded successfully.");
+      setMessage("✅ Photo uploaded successfully (optional).");
     } catch (error) {
       setMessage("❌ Error uploading photo. Please try again.");
     }
@@ -64,7 +67,7 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (form.age < 18) {
+    if (parseInt(form.age, 10) < 18) {
       setMessage("⚠️ Age must be 18 or above.");
       setLoading(false);
       return;
@@ -115,14 +118,7 @@ const Signup = () => {
             value={form.name}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #CBD5E0",
-              outline: "none",
-              marginBottom: "10px",
-            }}
+            style={inputStyle}
           />
 
           <input
@@ -132,14 +128,7 @@ const Signup = () => {
             value={form.email}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #CBD5E0",
-              outline: "none",
-              marginBottom: "10px",
-            }}
+            style={inputStyle}
           />
 
           <input
@@ -149,14 +138,7 @@ const Signup = () => {
             value={form.password}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #CBD5E0",
-              outline: "none",
-              marginBottom: "10px",
-            }}
+            style={inputStyle}
           />
 
           <input
@@ -166,14 +148,7 @@ const Signup = () => {
             value={form.age}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #CBD5E0",
-              outline: "none",
-              marginBottom: "10px",
-            }}
+            style={inputStyle}
           />
 
           <input
@@ -183,55 +158,64 @@ const Signup = () => {
             value={form.location}
             onChange={handleChange}
             required
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "5px",
-              border: "1px solid #CBD5E0",
-              outline: "none",
-              marginBottom: "10px",
-            }}
+            style={inputStyle}
           />
 
-          {/* ✅ File Upload for Profile Photo */}
+          {/* ✅ File Upload for Profile Photo (Optional) */}
           <input
             type="file"
             accept="image/*"
             onChange={handlePhotoUpload}
             style={{ marginBottom: "10px" }}
           />
+          <p style={{ fontSize: "12px", color: "#4A5568", marginTop: "-8px", marginBottom: "10px" }}>
+            (Optional)
+          </p>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <label style={{ fontSize: "14px", marginBottom: "5px" }}>
+            <label style={checkboxStyle}>
               <input type="checkbox" name="ExteriorPlants" onChange={handleChange} /> Interested in Exterior Plants
             </label>
-            <label style={{ fontSize: "14px", marginBottom: "10px" }}>
+            <label style={checkboxStyle}>
               <input type="checkbox" name="InteriorPlants" onChange={handleChange} /> Interested in Interior Plants
             </label>
           </div>
 
           {message && <p style={{ color: "red", marginBottom: "10px" }}>{message}</p>}
 
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              background: "#38A169",
-              color: "white",
-              padding: "10px",
-              borderRadius: "5px",
-              border: "none",
-              cursor: "pointer",
-              transition: "background 0.3s",
-            }}
-            disabled={loading}
-          >
+          <button type="submit" style={buttonStyle} disabled={loading}>
             {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
           </button>
         </form>
       </div>
     </div>
   );
+};
+
+// ✅ Reusable Styles
+const inputStyle = {
+  width: "100%",
+  padding: "10px",
+  borderRadius: "5px",
+  border: "1px solid #CBD5E0",
+  outline: "none",
+  marginBottom: "10px",
+};
+
+const checkboxStyle = {
+  fontSize: "14px",
+  marginBottom: "5px",
+};
+
+const buttonStyle = {
+  width: "100%",
+  background: "#38A169",
+  color: "white",
+  padding: "10px",
+  borderRadius: "5px",
+  border: "none",
+  cursor: "pointer",
+  transition: "background 0.3s",
 };
 
 export default Signup;
