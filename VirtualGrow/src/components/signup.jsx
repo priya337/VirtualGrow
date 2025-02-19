@@ -1,11 +1,10 @@
-import { useState } from "react";
-import axios from "axios"; // ✅ Using axios directly
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/authcontext.jsx"; // ✅ Using AuthContext
 import { useNavigate } from "react-router-dom";
-
-// ✅ Hardcoded backend URL
-const BACKEND_URL = "https://virtualgrow-server.onrender.com";
+import "../styles/VirtualGarden.css"; // ✅ Import global CSS
 
 const Signup = () => {
+  const { signup } = useContext(AuthContext); // ✅ Using signup function from AuthContext
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -27,17 +26,21 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${BACKEND_URL}/users/signup`, form);
-      navigate("/login");
+      const result = await signup(form); 
+      if (result === "success") {
+        navigate("/login");
+      } else {
+        console.error("❌ Signup failed:", result);
+      }
     } catch (error) {
-      console.error("❌ Signup failed:", error.response?.data || error.message);
+      console.error("❌ Signup error:", error);
     }
   };
 
   return (
-    <div className="register-area">
-      <form className="signup" onSubmit={handleSignup}>
-        <h2>Sign up</h2>
+    <div className="signup-page">
+      <form className="signup-form" onSubmit={handleSignup}>
+        <h2 className="signup-title">Sign Up</h2>
         <div className="form-fields">
           <div className="row">
             <label htmlFor="name">Name</label>
@@ -76,69 +79,6 @@ const Signup = () => {
         </div>
         <button type="submit" className="signup-button">Sign Up</button>
       </form>
-
-      {/* Embedded CSS */}
-      <style>
-        {`
-          .register-area {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-image: url('/assets/background.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-          }
-
-          .signup {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-          }
-
-          .form-fields {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-          }
-
-          .row {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-          }
-
-          .row-checkboxes {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-          }
-
-          .signup-button {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 80%;
-          }
-
-          .signup-button:hover {
-            background-color: #218838;
-          }
-        `}
-      </style>
     </div>
   );
 };
