@@ -18,10 +18,9 @@ const Navbar = () => {
   }, [accessToken]);
 
   // Check if on login, signup, or logout page
-  const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/logout";
   const isAboutUs = location.pathname === "/aboutUs";
-  const isLogoutPage = location.pathname === "/logout";
-  const isLoggedOut = !accessToken && (isLogoutPage || location.pathname === "/" || isAboutUs);
+  const isLoggedOut = !accessToken && (location.pathname === "/" || isAboutUs);
 
   return (
     <nav className="navbar">
@@ -35,7 +34,7 @@ const Navbar = () => {
       </div>
       
       <div className="userLogin">
-        {isAuthPage || isLogoutPage || isLoggedOut ? (
+        {isAuthPage ? null : isLoggedOut ? (
           <>
             <Link to="/">Home</Link>
             <Link to="/aboutUs">About Us</Link>
@@ -71,24 +70,7 @@ const Navbar = () => {
               )}
             </div>
           </>
-        ) : (
-          <>
-            <Link to="/aboutUs">About Us</Link>
-            <div className="profile-dropdown">
-              <FaUserCircle 
-                size={28} 
-                className="profile-icon" 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              />
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/login">Login</Link>
-                  <Link to="/signup">Signup</Link>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+        ) : null}
       </div>
       
       <style>
