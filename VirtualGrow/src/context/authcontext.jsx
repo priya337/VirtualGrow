@@ -109,6 +109,27 @@ export const AuthProvider = ({ children }) => {
     }
 };
 
+const deleteUserProfile = async () => {
+  try {
+    const response = await fetch('/api/users/delete', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' // Ensures cookies are sent with the request
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete profile');
+    }
+
+    logout(); // Log the user out after profile deletion
+  } catch (error) {
+    console.error('Error deleting profile:', error);
+  }
+};
+
+
   
   // 🆕 🔓 Logout Function (Updated to Call Backend)
   const logout = async () => {
