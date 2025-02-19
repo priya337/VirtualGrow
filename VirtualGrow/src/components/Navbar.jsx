@@ -11,9 +11,10 @@ const Navbar = () => {
   const location = useLocation(); // Get current path
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Check if on login or signup page
+  // Check if on login, signup, or logout page
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
   const isAboutUs = location.pathname === "/aboutUs";
+  const isLogoutPage = location.pathname === "/logout";
 
   return (
     <nav className="navbar">
@@ -27,7 +28,7 @@ const Navbar = () => {
       </div>
       
       <div className="userLogin">
-        {isAuthPage ? (
+        {isAuthPage || isLogoutPage ? (
           <>
             <Link to="/">Home</Link>
             <Link to="/aboutUs">About Us</Link>
@@ -62,7 +63,7 @@ const Navbar = () => {
               {dropdownOpen && (
                 <div className="dropdown-menu">
                   <Link to="/userprofile">User Profile</Link>
-                  <Link to="/logout" onClick={() => {logout(); setDropdownOpen(false);}}>Logout</Link>
+                  <Link to="/logout" onClick={() => {logout(); setDropdownOpen(false); navigate("/");}}>Logout</Link>
                 </div>
               )}
             </div>
