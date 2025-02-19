@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom"; // <-- For "Go Back Home" button
 import ClipLoader from "react-spinners/ClipLoader";
 import { AuthContext } from "../context/authcontext"; // ✅ Import your AuthContext
 
+// Helper function to build prompt based on checkboxes
 function buildPlantPrompt(ExteriorPlants, InteriorPlants) {
   if (ExteriorPlants && InteriorPlants) {
     return "a combination of lush exterior and interior plants";
@@ -14,6 +16,7 @@ function buildPlantPrompt(ExteriorPlants, InteriorPlants) {
   }
 }
 
+// Helper function to generate Pollinations URL
 function getPollinationsUrl(prompt) {
   const descriptors = ["vibrant", "serene", "colorful", "dreamy", "realistic"];
   const randomDescriptor =
@@ -24,12 +27,14 @@ function getPollinationsUrl(prompt) {
 }
 
 const Signup = () => {
-  // ✅ Access your AuthContext
+  const navigate = useNavigate();
   const { signup } = useContext(AuthContext);
 
+  // Local state
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+  // Form data
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -39,18 +44,28 @@ const Signup = () => {
     InteriorPlants: false,
   });
 
+  // For AI-generated preview
   const [previewUrl, setPreviewUrl] = useState("");
 
-  // Build a new preview whenever ExteriorPlants/InteriorPlants changes
+  // Build new preview when checkboxes change
   useEffect(() => {
     const prompt = buildPlantPrompt(form.ExteriorPlants, form.InteriorPlants);
     const url = getPollinationsUrl(prompt);
     setPreviewUrl(url);
   }, [form.ExteriorPlants, form.InteriorPlants]);
 
-  // Handle input/checkbox changes
+  // Handle changes to text/checkbox
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    // Password length validation
+    if (name === "password" && value.length > 12) {
+      setMessage("⚠️ Password cannot exceed 12 characters.");
+      return;
+    } else {
+      setMessage(""); // Clear any previous message
+    }
+
     setForm({
       ...form,
       [name]: type === "checkbox" ? checked : value,
@@ -70,7 +85,7 @@ const Signup = () => {
         photo: previewUrl,
       };
 
-      // ✅ Call the signup function from AuthContext
+      // Call signup from AuthContext
       const result = await signup(payload);
 
       if (result === "success") {
@@ -90,6 +105,7 @@ const Signup = () => {
       <div style={formStyle}>
         <h2 style={{ color: "#2F855A" }}>Sign Up</h2>
         <form onSubmit={handleSignup}>
+          {/* Name Field */}
           <input
             type="text"
             name="name"
@@ -99,6 +115,8 @@ const Signup = () => {
             required
             style={inputStyle}
           />
+
+          {/* Email Field */}
           <input
             type="email"
             name="email"
@@ -108,15 +126,19 @@ const Signup = () => {
             required
             style={inputStyle}
           />
+
+          {/* Password Field with max 12 characters */}
           <input
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder="Password (Max 12 characters)"
             value={form.password}
             onChange={handleChange}
             required
             style={inputStyle}
           />
+
+          {/* Location Field */}
           <input
             type="text"
             name="location"
@@ -126,6 +148,7 @@ const Signup = () => {
             style={inputStyle}
           />
 
+          {/* Checkboxes + Preview */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <div style={{ marginRight: "20px" }}>
               <label style={{ display: "block" }}>
@@ -148,6 +171,7 @@ const Signup = () => {
               </label>
             </div>
 
+            {/* AI-generated image preview */}
             {previewUrl && (
               <img
                 src={previewUrl}
@@ -157,18 +181,28 @@ const Signup = () => {
             )}
           </div>
 
+          {/* Error / Success Message */}
           {message && <p style={{ color: "red" }}>{message}</p>}
 
+          {/* Submit Button */}
           <button type="submit" style={buttonStyle} disabled={loading}>
             {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
           </button>
         </form>
+
+        {/* Go Back Home Button */}
+        <button
+          style={{ ...buttonStyle, marginTop: "10px", background: "#3182CE" }}
+          onClick={() => navigate("/")}
+        >
+          Go Back Home
+        </button>
       </div>
     </div>
   );
 };
 
-// Basic styles
+// Basic styling
 const containerStyle = {
   background: "url('/images/nature.jpg') no-repeat center center",
   backgroundSize: "cover",
