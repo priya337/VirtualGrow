@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../VirtualGarden.css"; // Keep external styles intact
 import Logo from "../assets/VirtualGrowLogo.png";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UseAuth } from "../context/authcontext.jsx";
 import { FaUserCircle } from "react-icons/fa"; // Import the face icon
 
@@ -11,10 +11,17 @@ const Navbar = () => {
   const location = useLocation(); // Get current path
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  useEffect(() => {
+    if (!accessToken) {
+      setDropdownOpen(false);
+    }
+  }, [accessToken]);
+
   // Check if on login, signup, or logout page
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
   const isAboutUs = location.pathname === "/aboutUs";
   const isLogoutPage = location.pathname === "/logout";
+  const isLoggedOut = !accessToken && (isLogoutPage || location.pathname === "/" || isAboutUs);
 
   return (
     <nav className="navbar">
@@ -28,14 +35,10 @@ const Navbar = () => {
       </div>
       
       <div className="userLogin">
-        {isAuthPage || isLogoutPage ? (
+        {isAuthPage || isLogoutPage || isLoggedOut ? (
           <>
             <Link to="/">Home</Link>
             <Link to="/aboutUs">About Us</Link>
-          </>
-        ) : isAboutUs && !accessToken ? (
-          <>
-            <Link to="/">Home</Link>
             <div className="profile-dropdown">
               <FaUserCircle 
                 size={28} 
@@ -63,7 +66,7 @@ const Navbar = () => {
               {dropdownOpen && (
                 <div className="dropdown-menu">
                   <Link to="/userprofile">User Profile</Link>
-                  <Link to="/logout" onClick={() => {logout(); setDropdownOpen(false); navigate("/");}}>Logout</Link>
+                  <Link to="/logout" onClick={() => {logout(); setDropdownOpen(false); navigate("/logout");}}>Logout</Link>
                 </div>
               )}
             </div>
