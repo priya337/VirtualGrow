@@ -13,6 +13,7 @@ const Navbar = () => {
 
   // Check if on login or signup page
   const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+  const isAboutUs = location.pathname === "/aboutUs";
 
   return (
     <nav className="navbar">
@@ -31,7 +32,42 @@ const Navbar = () => {
             <Link to="/">Home</Link>
             <Link to="/aboutUs">About Us</Link>
           </>
-        ) : location.pathname === "/" ? (
+        ) : isAboutUs && !accessToken ? (
+          <>
+            <Link to="/">Home</Link>
+            <div className="profile-dropdown">
+              <FaUserCircle 
+                size={28} 
+                className="profile-icon" 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              />
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <Link to="/login">Login</Link>
+                  <Link to="/signup">Signup</Link>
+                </div>
+              )}
+            </div>
+          </>
+        ) : accessToken ? (
+          <>
+            <Link to="/gardenscapes">Gardenscapes</Link>
+            <Link to="/gardenpicks">Gardenpicks</Link>
+            <div className="profile-dropdown" style={{ marginLeft: 'auto' }}>
+              <FaUserCircle 
+                size={28} 
+                className="profile-icon" 
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              />
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <Link to="/userprofile">User Profile</Link>
+                  <Link to="/logout" onClick={() => {logout(); setDropdownOpen(false);}}>Logout</Link>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
           <>
             <Link to="/aboutUs">About Us</Link>
             <div className="profile-dropdown">
@@ -47,25 +83,6 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-          </>
-        ) : (
-          <>
-            <Link to="/gardenscapes">Gardenscapes</Link>
-            <Link to="/gardenpicks">Gardenpicks</Link>
-            <div className="profile-dropdown">
-              <FaUserCircle 
-                size={28} 
-                className="profile-icon" 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              />
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/userprofile">User Profile</Link>
-                  <Link to="/logout" onClick={logout}>Logout</Link>
-                </div>
-              )}
-            </div>
-            <Link to="/aboutUs">About Us</Link>
           </>
         )}
       </div>
