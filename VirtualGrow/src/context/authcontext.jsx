@@ -96,8 +96,20 @@ export const AuthProvider = ({ children }) => {
       logout();
     }
   };
-  
 
+  const resetPassword = async (email, newPassword) => {
+    try {
+        const { data } = await axios.post(`${BACKEND_URL}/api/users/reset-password`, { email, newPassword });
+
+        console.log("✅ Password reset successful:", data.message);
+        return { success: true, message: data.message };
+    } catch (error) {
+        console.error("❌ Password reset failed:", error.response?.data || error.message);
+        return { success: false, message: error.response?.data?.error || "Something went wrong!" };
+    }
+};
+
+  
   // 🆕 🔓 Logout Function (Updated to Call Backend)
   const logout = async () => {
     try {
@@ -124,7 +136,7 @@ export const AuthProvider = ({ children }) => {
   
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );
