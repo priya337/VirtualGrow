@@ -45,60 +45,30 @@ const Logout = () => {
           textAlign: "center",
         }}
       >
-        {user ? (
-          <>
-            {/* ✅ User Goodbye Message */}
-            <h2 style={{ color: "#2F855A", fontSize: "22px" }}>
-              See You Soon, {user.name}! 👋
-            </h2>
-            <p style={{ fontSize: "14px", color: "#4A5568", marginBottom: "15px" }}>
-              We hope you had a great time. Come back soon to continue your journey with us! 🌱
-            </p>
+        {/* ✅ Goodbye Message */}
+        <h2 style={{ color: "#2F855A", fontSize: "22px" }}>
+          You have successfully logged out! 🌿
+        </h2>
+        <p style={{ fontSize: "14px", color: "#4A5568", marginBottom: "15px" }}>
+          Thank you for visiting! We look forward to seeing you again soon. 🍃
+        </p>
 
-            {/* ✅ Logout Button with new text */}
-            <button
-              onClick={handleLogout}
-              style={{
-                width: "100%",
-                background: "#E53E3E",
-                color: "white",
-                padding: "10px",
-                borderRadius: "5px",
-                border: "none",
-                cursor: "pointer",
-                transition: "background 0.3s",
-              }}
-              disabled={loading}
-            >
-              {loading ? <ClipLoader size={20} color="white" /> : "Return to Home"}
-            </button>
-          </>
-        ) : (
-          <>
-            {/* ✅ Logged Out Message */}
-            <h2 style={{ color: "#2F855A", fontSize: "22px" }}>You have successfully logged out! 🌿</h2>
-            <p style={{ fontSize: "14px", color: "#4A5568", marginBottom: "15px" }}>
-              Thanks for visiting. We look forward to welcoming you back soon! 🍃
-            </p>
-
-            {/* ✅ Button to Login Page with new text */}
-            <button
-              onClick={() => navigate("/login")}
-              style={{
-                width: "100%",
-                background: "#38A169",
-                color: "white",
-                padding: "10px",
-                borderRadius: "5px",
-                border: "none",
-                cursor: "pointer",
-                transition: "background 0.3s",
-              }}
-            >
-              Take me back to Login
-            </button>
-          </>
-        )}
+        {/* ✅ Button to Homepage */}
+        <button
+          onClick={() => window.location.href = "https://virtual-grow.netlify.app/"}
+          style={{
+            width: "100%",
+            background: "#38A169",
+            color: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+            transition: "background 0.3s",
+          }}
+        >
+          Go to Homepage
+        </button>
       </div>
     </div>
   );
