@@ -41,13 +41,16 @@ export const AuthProvider = ({ children }) => {
 
 
  // 🔑 Login Function
-const login = async (email, password) => {
+ const login = async (email, password) => {
   try {
-    const { data } = await axios.post(`${BACKEND_URL}/api/users/login`, { email, password }, { withCredentials: true });
+    const { data } = await axios.post(
+      `${BACKEND_URL}/api/users/login`,
+      { email, password },
+      { withCredentials: true } // ✅ Ensure cookies are sent
+    );
 
-    // ✅ Store tokens
     localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken); // ✅ Save refresh token
+    localStorage.setItem("refreshToken", data.refreshToken);
     localStorage.setItem("userEmail", email);
 
     setAccessToken(data.accessToken);
@@ -75,45 +78,50 @@ const login = async (email, password) => {
   };
 
   // 🔄 Refresh Token Function
-const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem("refreshToken");
-
-  if (!refreshToken) {
-    console.log("⚠️ No refresh token found. Logging out.");
-    return logout();
-  }
-
-  try {
-    console.log("🔄 Refreshing access token...");
-    const { data } = await axios.post(`${BACKEND_URL}/api/users/refresh-token`, { refreshToken }, { withCredentials: true });
-
-    localStorage.setItem("accessToken", data.accessToken);
-    setAccessToken(data.accessToken);
-
-    console.log("✅ Access token refreshed:", data.accessToken);
-  } catch (error) {
-    console.error("❌ Token refresh failed:", error.response?.data || error.message);
-    logout();
-  }
-};
+  const refreshAccessToken = async () => {
+    try {
+      console.log("🔄 Refreshing access token...");
+      const { data } = await axios.post(
+        `${BACKEND_URL}/api/users/refresh-token`,
+        {}, // No body needed if token is in cookies
+        { withCredentials: true }
+      );
+  
+      localStorage.setItem("accessToken", data.accessToken);
+      setAccessToken(data.accessToken);
+  
+      console.log("✅ Access token refreshed:", data.accessToken);
+    } catch (error) {
+      console.error("❌ Token refresh failed:", error.response?.data || error.message);
+      logout();
+    }
+  };
+  
 
   // 🆕 🔓 Logout Function (Updated to Call Backend)
   const logout = async () => {
     try {
-      await axios.post(`${BACKEND_URL}/api/users/logout`, {}, { withCredentials: true }); // ✅ Logout API call
+      console.log("🔍 Checking Refresh Token Before Logout:", localStorage.getItem("refreshToken"));
+      
+      await axios.post(`${BACKEND_URL}/api/users/logout`, {}, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+      });
+  
       console.log("🚪 Logging out. Clearing tokens...");
-
+  
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("userEmail");
       setUser(null);
       setAccessToken(null);
-
+  
       console.log("✅ Tokens removed, user logged out.");
     } catch (error) {
       console.error("❌ Logout failed:", error.response?.data || error.message);
     }
   };
+  
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken }}>
