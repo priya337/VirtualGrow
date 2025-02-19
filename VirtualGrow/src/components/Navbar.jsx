@@ -17,18 +17,16 @@ const Navbar = () => {
     }
   }, [accessToken]);
 
-  // Pages where the Navbar should be completely hidden
-  const hideNavbar = location.pathname === "/reset-password";
+
 
   // Define page conditions
   const isHomePage = location.pathname === "/";
   const isAboutUs = location.pathname === "/aboutUs";
+  const isResetPassword = location.pathname === "/reset-password";
   const isAuthPage = ["/login", "/signup", "/logout"].includes(location.pathname);
   const isLoggedOut = !accessToken;
 
-  if (hideNavbar) {
-    return null; // ✅ Hide the entire Navbar on /reset-password
-  }
+
 
   return (
     <nav className="navbar">
@@ -42,7 +40,7 @@ const Navbar = () => {
       </div>
       
       <div className="userLogin">
-        {!isAuthPage && (
+        {!isAuthPage && !isResetPassword && (
           <>
             {/* ✅ Home Page: Show "About Us" + Profile Icon */}
             {isHomePage && (
