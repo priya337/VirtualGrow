@@ -122,7 +122,7 @@ const Login = () => {
         {/* ✅ Reset Password Option */}
         <p style={{ marginTop: "10px" }}>
           <a 
-            href="/resetpassword" 
+            href="/reset-password" 
             style={{
               color: "#3182CE",
               textDecoration: "none",
