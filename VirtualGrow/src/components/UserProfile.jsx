@@ -41,7 +41,7 @@ const Dashboard = () => {
   return (
     <div
       style={{
-        background: "url('/images/basket.jpg') no-repeat center center",
+        background: "url('/images/nature.jpg') no-repeat center center",
         backgroundSize: "cover",
         width: "100vw",
         height: "100vh",
@@ -60,6 +60,23 @@ const Dashboard = () => {
           textAlign: "center",
         }}
       >
+        {/* ✅ Profile Image Placeholder with Fallback */}
+        <div
+          style={{
+            width: "120px",
+            height: "120px",
+            borderRadius: "10px",
+            border: "3px solid #2F855A",
+            background: user.photo
+              ? `url(${user.photo}) no-repeat center center / cover`
+              : "url('/images/basket.jpg') no-repeat center center / cover", // ✅ Fallback to basket.jpg
+            marginBottom: "10px",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        ></div>
+
         <h2 style={{ color: "#2F855A", fontSize: "22px" }}>Welcome, {user.name}!</h2>
 
         <div style={{ textAlign: "left", marginTop: "15px", fontSize: "16px" }}>
