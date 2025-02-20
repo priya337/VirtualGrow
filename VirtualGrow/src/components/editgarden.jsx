@@ -18,8 +18,8 @@ const EditGarden = () => {
   useEffect(() => {
     const fetchGarden = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
-        const response = await axios.get(`${API_URL}/api/ai/garden/${gardenName}`);
+        const backendUrl = "https://virtualgrow-server.onrender.com";
+        const response = await axios.get(`${backendUrl}/api/ai/garden/${gardenName}`);
 
         if (response.data) {
           setFormData({
@@ -49,7 +49,7 @@ const EditGarden = () => {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
 
       // ✅ Make a single `PUT` request to update the garden and regenerate AI plan
-      const response = await axios.put(`${API_URL}/api/ai/garden/${gardenName}`, {
+      const response = await axios.put(`${backendUrls}/api/ai/garden/${gardenName}`, {
         name: formData.name,
         gardenSize: { length: formData.length, breadth: formData.breadth },
         preferredPlants: formData.preferredPlants.split(",").map((plant) => plant.trim()),
