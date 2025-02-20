@@ -49,7 +49,7 @@ const EditGarden = () => {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
 
       // ✅ Make a single `PUT` request to update the garden and regenerate AI plan
-      const response = await axios.put(`${backendUrls}/api/ai/garden/${gardenName}`, {
+      const response = await axios.put(`${backendUrl}/api/ai/garden/${gardenName}`, {
         name: formData.name,
         gardenSize: { length: formData.length, breadth: formData.breadth },
         preferredPlants: formData.preferredPlants.split(",").map((plant) => plant.trim()),
