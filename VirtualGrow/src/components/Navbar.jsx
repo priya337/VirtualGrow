@@ -11,6 +11,8 @@ const Navbar = () => {
   const location = useLocation(); // Get current path
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  console.log("Navbar accessToken:", accessToken);
+
   useEffect(() => {
     if (!accessToken) {
       setDropdownOpen(false);
