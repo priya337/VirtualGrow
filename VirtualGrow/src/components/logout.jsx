@@ -9,20 +9,19 @@ const Logout = () => {
   const [loading, setLoading] = useState(false);
   const [loggedOut, setLoggedOut] = useState(false);
 
-  // ✅ Redirect to login after logout
+  // If user is null/undefined after logout, redirect to /login
   useEffect(() => {
     if (!user && loggedOut) {
       navigate("/login");
     }
-  }, [user, navigate, loggedOut]);
+  }, [user, loggedOut, navigate]);
 
   const handleLogout = async () => {
-    setLoading(true); // ✅ Show spinner while logging out
-    await logout();
+    setLoading(true);
+    await logout(); // Calls the AuthContext logout function
     setLoading(false);
     setLoggedOut(true);
   };
-
   return (
     <div 
       style={{
