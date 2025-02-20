@@ -158,25 +158,28 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
     console.log("🔄 Generating image from API:", apiUrl);
 
     try {
-      // Fetch the image
+      // Display the image immediately in the UI.
       setImageUrl(apiUrl);
-
-      // Save image URL to the database
+  
+      // Define your backend URL.
       const backendUrl = "https://virtualgrow-server.onrender.com";
+      
+      // Save image URL to the database by calling your backend endpoint.
       await axios.post(`${backendUrl}/api/ai/saveImage`, {
         gardenName: name,
         imageUrl: apiUrl,
       });
-
+  
       console.log("✅ Image saved to database");
     } catch (error) {
       console.error("❌ Error generating/saving image:", error);
+    } finally {
+      // Reset loading state and close the modal regardless of success or failure.
+      setLoadingImage(false);
+      closeModal();
     }
-
-    setLoadingImage(false);
-    closeModal();
   };
-
+  
   return (
     <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-4"
     style={{
@@ -291,9 +294,14 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
   </div>
 )}
 
-              <Link to="/gardenscapes" className="btn btn-secondary btn-lg w-100">
-                Back to List
-              </Link>
+<div className="d-flex gap-2">
+  <Link to="/gardenscapes" className="btn btn-secondary btn-lg flex-fill">
+    Back to List
+  </Link>
+  <Link to="/gardenpicks" className="btn btn-primary btn-lg flex-fill">
+    Back to picks
+  </Link>
+</div>
             </div>
 
             {/* Center Column: Garden Plan */}
