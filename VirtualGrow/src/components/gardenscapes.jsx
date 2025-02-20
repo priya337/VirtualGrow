@@ -150,35 +150,58 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
     setLoadingImage(true);
     setImageUrl(null);
 
-    const prompt = `Layout Suggestions: ${layoutSuggestions}`;
-    const encodedPrompt = encodeURIComponent(prompt);
+    // Create a prompt from layout suggestions
+  const prompt = `Layout Suggestions: ${layoutSuggestions}`;
+  const encodedPrompt = encodeURIComponent(prompt);
 
-    const apiUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+  // Generate the AI image URL
+  const apiUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+  console.log("🔄 Generating image from API:", apiUrl);
 
-    console.log("🔄 Generating image from API:", apiUrl);
+  try {
+    // Display the image immediately in the UI.
+    setImageUrl(apiUrl);
 
+    // Define your backend URL.
+    const backendUrl = "https://virtualgrow-server.onrender.com";
+    
+    // Save the generated image URL to your database by calling the backend endpoint.
+    await axios.post(`${backendUrl}/api/ai/saveImage`, {
+      gardenName: name,
+      imageUrl: apiUrl,
+    });
+
+    // Immediately fetch the updated image data.
+    fetchSavedImage();
+
+    console.log("✅ Image saved to database");
+    if (typeof refreshGardens === "function") {
+      await refreshGardens();
+    }
+  } catch (error) {
+    console.error("❌ Error generating/saving image:", error);
+  } finally {
+    setLoadingImage(false);
+    closeModal();
+  }
+};
+
+useEffect(() => {
+  const fetchSavedImage = async () => {
     try {
-      // Display the image immediately in the UI.
-      setImageUrl(apiUrl);
-  
-      // Define your backend URL.
       const backendUrl = "https://virtualgrow-server.onrender.com";
-      
-      // Save image URL to the database by calling your backend endpoint.
-      await axios.post(`${backendUrl}/api/ai/saveImage`, {
-        gardenName: name,
-        imageUrl: apiUrl,
-      });
-  
-      console.log("✅ Image saved to database");
+      const response = await axios.get(`${backendUrl}/api/ai/images/${name}`);
+      if (response.data && response.data.length > 0) {
+        // Assuming you want the most recent image if there are multiple.
+        setImageUrl(response.data[0].imageUrl);
+      }
     } catch (error) {
-      console.error("❌ Error generating/saving image:", error);
-    } finally {
-      // Reset loading state and close the modal regardless of success or failure.
-      setLoadingImage(false);
-      closeModal();
+      console.error("Error fetching saved image:", error);
     }
   };
+
+  fetchSavedImage();
+}, [name]);
 
   return (
     <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-4"
@@ -294,14 +317,14 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
   </div>
 )}
 
-
+<div className="d-flex justify-content-center gap-3 my-3">
   <Link to="/gardenscapes" className="btn btn-primary btn-lg flex-fill">
     Back to List
   </Link>
-  
   <Link to="/gardenpicks" className="btn btn-secondary btn-lg flex-fill">
-    Back to picks
+    Back to Picks
   </Link>
+</div>
 </div>
           
 
