@@ -39,22 +39,28 @@ export const AuthProvider = ({ children }) => {
  // 🔑 Login Function
  const login = async (email, password) => {
   try {
-    // Important: withCredentials for cookie-based
     const { data } = await axios.post(
       `${BACKEND_URL}/api/users/login`,
       { email, password },
       { withCredentials: true }
     );
 
-    // data might contain user info, e.g. data.user
     console.log("✅ Login successful, cookies set by server:", data);
-    setUser(data.user); // store user in state
+    setUser(data.user);
+    // Check if the response includes an accessToken and store it
+    if (data.accessToken) {
+      setAccessToken(data.accessToken);
+      localStorage.setItem("accessToken", data.accessToken);
+      console.log("Access token stored:", data.accessToken);
+    }
     return "success";
   } catch (error) {
     console.error("❌ Login failed:", error.response?.data || error.message);
     return error.response?.data?.error || "error";
   }
 };
+
+
 
 
 
@@ -130,20 +136,16 @@ const deleteUserProfile = async () => {
 const logout = async () => {
   try {
     console.log("🔍 Attempting logout...");
-
-    // No need to pass refreshToken in body; server reads from cookies
-    await axios.post(`${BACKEND_URL}/api/users/logout`, {}, {
-      withCredentials: true,
-    });
-
-    // Clear local user state
+    await axios.post(`${BACKEND_URL}/api/users/logout`, {}, { withCredentials: true });
     setUser(null);
-
+    setAccessToken(null); // Clear token from state
+    localStorage.removeItem("accessToken"); // Clear token from local storage
     console.log("✅ Logged out successfully, cookies cleared on server.");
   } catch (error) {
     console.error("❌ Logout failed:", error.response?.data || error.message);
   }
 };
+
 
 const fetchUserProfile = async () => {
   try {
