@@ -17,53 +17,45 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ Auto-login if token exists
   useEffect(() => {
-    if (accessToken) {
-      const storedEmail = localStorage.getItem("userEmail");
-      if (!storedEmail) {
-        console.warn("⚠️ No email stored in localStorage. Cannot fetch profile.");
-        return;
-      }
-
-      console.log(`✅ Fetching user profile for: ${storedEmail}`);
-      axios.get(`${BACKEND_URL}/api/users/profile/${storedEmail}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+    console.log("🔍 Checking if user is logged in via cookie...");
+    axios
+      .get(`${BACKEND_URL}/api/users/profile`, {
+        withCredentials: true, // Send cookies
       })
-        .then((res) => {
-          console.log("✅ User profile fetched successfully:", res.data);
-          setUser(res.data);
-        })
-        .catch((error) => {
-          console.error("❌ Error fetching user profile:", error.response?.data || error.message);
-          logout();
-        });
-    }
-  }, [accessToken]);
+      .then((res) => {
+        console.log("✅ Auto-login successful, user profile:", res.data);
+        setUser(res.data);
+      })
+      .catch((error) => {
+        console.log(
+          "❌ Not logged in or error fetching profile:",
+          error.response?.data || error.message
+        );
+        setUser(null);
+      });
+  }, []);
 
 
  // 🔑 Login Function
  const login = async (email, password) => {
   try {
-    // No withCredentials needed, since we're not using cookies
-    const { data } = await axios.post(`${BACKEND_URL}/api/users/login`, {
-      email,
-      password,
-    });
+    // Important: withCredentials for cookie-based
+    const { data } = await axios.post(
+      `${BACKEND_URL}/api/users/login`,
+      { email, password },
+      { withCredentials: true }
+    );
 
-    // data contains { message, accessToken, refreshToken, user }
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
-    localStorage.setItem("userEmail", email);
-
-    setAccessToken(data.accessToken);
-    setUser(data.user);
-
-    console.log("✅ Login successful. Tokens stored in localStorage.");
+    // data might contain user info, e.g. data.user
+    console.log("✅ Login successful, cookies set by server:", data);
+    setUser(data.user); // store user in state
     return "success";
   } catch (error) {
     console.error("❌ Login failed:", error.response?.data || error.message);
     return error.response?.data?.error || "error";
   }
 };
+
 
 
   // 🆕 🔐 Signup Function
@@ -139,34 +131,36 @@ const logout = async () => {
   try {
     console.log("🔍 Attempting logout...");
 
-    // Retrieve refreshToken from localStorage
-    const refreshToken = localStorage.getItem("refreshToken");
-
-    if (refreshToken) {
-      // Send POST request with refreshToken in the body
-      await axios.post(`${BACKEND_URL}/api/users/logout`, { refreshToken });
-    } else {
-      console.log("❌ No refresh token found in localStorage.");
-    }
+    // No need to pass refreshToken in body; server reads from cookies
+    await axios.post(`${BACKEND_URL}/api/users/logout`, {}, {
+      withCredentials: true,
+    });
 
     // Clear local user state
     setUser(null);
 
-    // Remove tokens from localStorage
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userEmail");
-
-    console.log("✅ Logged out successfully, tokens removed from localStorage.");
+    console.log("✅ Logged out successfully, cookies cleared on server.");
   } catch (error) {
     console.error("❌ Logout failed:", error.response?.data || error.message);
   }
 };
 
-  
+const fetchUserProfile = async () => {
+  try {
+    const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
+      withCredentials: true,
+    });
+    console.log("✅ User profile fetched:", data);
+    setUser(data);
+  } catch (error) {
+    console.error("❌ Error fetching user profile:", error.response?.data || error.message);
+    // If token is invalid, you might want to logout or setUser(null)
+  }
+};
+
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken, resetPassword }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken, resetPassword, fetchUserProfile  }}>
       {children}
     </AuthContext.Provider>
   );
