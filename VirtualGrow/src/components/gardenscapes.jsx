@@ -179,7 +179,7 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
       closeModal();
     }
   };
-  
+
   return (
     <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-4"
     style={{
@@ -294,15 +294,16 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
   </div>
 )}
 
-<div className="d-flex gap-2">
-  <Link to="/gardenscapes" className="btn btn-secondary btn-lg flex-fill">
+
+  <Link to="/gardenscapes" className="btn btn-primary btn-lg flex-fill">
     Back to List
   </Link>
-  <Link to="/gardenpicks" className="btn btn-primary btn-lg flex-fill">
+  
+  <Link to="/gardenpicks" className="btn btn-secondary btn-lg flex-fill">
     Back to picks
   </Link>
 </div>
-            </div>
+          
 
             {/* Center Column: Garden Plan */}
             <div className="col-md-5">
