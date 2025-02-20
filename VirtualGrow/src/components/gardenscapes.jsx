@@ -12,6 +12,19 @@ export default function Gardenscape() {
   const [showModal, setShowModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
+    // 1️⃣ Define `fetchSavedImage` at the top level
+    const fetchSavedImage = async () => {
+      try {
+        const backendUrl = "https://virtualgrow-server.onrender.com";
+        const response = await axios.get(`${backendUrl}/api/ai/images/${name}`);
+        if (response.data && response.data.length > 0) {
+          setImageUrl(response.data[0].imageUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching saved image:", error);
+      }
+    };
+
 
   const getFormattedLayoutSuggestions = () => {
     if (!selectedGarden?.gardenPlanOverview?.GardenPlanOverview?.LayoutSuggestions) {
@@ -187,6 +200,10 @@ if (response.data.gardenPlanOverview?.layoutSuggestions) {
 };
 
 useEffect(() => {
+  if (!name) {
+    // Optionally setError('No garden name provided');
+    return;
+  }
   const fetchSavedImage = async () => {
     try {
       const backendUrl = "https://virtualgrow-server.onrender.com";
