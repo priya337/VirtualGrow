@@ -10,20 +10,19 @@ const Dashboard = () => {
   const [message, setMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  // 1. If there's no user in context, redirect to /login
   if (!user) {
     navigate("/login");
     return null;
   }
 
-  // Function to delete user profile using the call in AuthContext
+  // 2. Delete user profile
   const handleDeleteProfile = async () => {
     setLoading(true);
     try {
       await deleteUserProfile();
       setMessage("User profile deleted successfully!");
-      // Since the deleteUserProfile function calls logout(),
-      // you might already be logged out.
-      // Redirect to Signup page after a short delay.
+      // After deletion (and logout), redirect to /signup or anywhere else
       setTimeout(() => navigate("/signup"), 2000);
     } catch (error) {
       setMessage("Error deleting profile.");
@@ -54,7 +53,7 @@ const Dashboard = () => {
           textAlign: "center",
         }}
       >
-        {/* Profile Image Placeholder */}
+        {/* 3. Profile Image Placeholder with user.photo */}
         <div
           style={{
             width: "120px",
@@ -65,7 +64,6 @@ const Dashboard = () => {
               ? `url(${user.photo}) no-repeat center center / cover`
               : "url('/images/basket.jpg') no-repeat center center / cover",
             marginBottom: "10px",
-            display: "block",
             marginLeft: "auto",
             marginRight: "auto",
           }}
@@ -92,11 +90,9 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {message && (
-          <p style={{ color: "red", marginTop: "10px" }}>{message}</p>
-        )}
+        {message && <p style={{ color: "red", marginTop: "10px" }}>{message}</p>}
 
-        {/* Delete Profile Button */}
+        {/* 4. Delete Profile Button */}
         <button
           onClick={() => setShowDeleteModal(true)}
           style={{
@@ -120,7 +116,7 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* 5. Confirmation Modal for Deletion */}
       {showDeleteModal && (
         <div
           style={{
