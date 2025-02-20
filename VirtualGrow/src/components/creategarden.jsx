@@ -52,7 +52,7 @@ export default function CreateGarden() {
 
     setLoading(true);
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
+      const backendUrl = "https://virtualgrow-server.onrender.com";
       console.log("🌱 Backend URL:", backendUrl);
 
       const requestBody = {
