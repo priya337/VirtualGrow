@@ -352,7 +352,7 @@ useEffect(() => {
               <p><strong>Preferred Plants:</strong> {selectedGarden.preferredPlants?.join(", ")}</p>
 
               <h4 className="mt-3">Generated Plan</h4>
-              <div className="border p-3 rounded bg-light overflow-auto" style={{ maxHeight: "300px" }}>
+              <div className="border p-3 rounded bg-light overflow-auto" style={{ maxHeight: "450px" }}>
                 {selectedGarden.gardenPlanOverview ? renderValue(selectedGarden.gardenPlanOverview) : <p>Not available</p>}
               </div>
             </div>
