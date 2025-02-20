@@ -147,7 +147,6 @@ const logout = async () => {
   }
 };
 
-
 const fetchUserProfile = async () => {
   try {
     const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
@@ -157,7 +156,6 @@ const fetchUserProfile = async () => {
     setUser(data);
   } catch (error) {
     console.error("❌ Error fetching user profile:", error.response?.data || error.message);
-    // If token is invalid, you might want to logout or setUser(null)
   }
 };
 
