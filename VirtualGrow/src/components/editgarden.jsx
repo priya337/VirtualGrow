@@ -46,7 +46,7 @@ const EditGarden = () => {
     setLoading(true);
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5007";
+      const backendUrl = "https://virtualgrow-server.onrender.com";
 
       // ✅ Make a single `PUT` request to update the garden and regenerate AI plan
       const response = await axios.put(`${backendUrl}/api/ai/garden/${gardenName}`, {
