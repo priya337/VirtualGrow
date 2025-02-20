@@ -361,7 +361,7 @@ useEffect(() => {
             <div className="col-md-5 d-flex flex-column align-items-center">
               <h4>Generated Garden Layout</h4>
               {loadingImage && <p className="text-info">Generating image...</p>}
-              {imageUrl && <img src={imageUrl} alt="Generated Garden Layout" className="img-fluid rounded shadow" />}
+              {imageUrl && <img src={selectedGarden.imageUrl} alt="Generated Garden Layout" className="img-fluid rounded shadow" />}
             </div>
           </div>
         </div>
