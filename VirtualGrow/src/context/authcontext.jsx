@@ -45,23 +45,24 @@ export const AuthProvider = ({ children }) => {
       { withCredentials: true }
     );
 
-    console.log("✅ Login successful, cookies set by server:", data);
+    console.log("Login response data:", data);
     setUser(data.user);
-    // Check if the response includes an accessToken and store it
-    if (data.accessToken) {
+
+    if (data.accessToken && data.refreshToken) {
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
-      console.log("Access token stored:", data.accessToken);
+      // Optionally, store the refresh token if needed:
+      localStorage.setItem("refreshToken", data.refreshToken);
+      console.log("Tokens stored:", data.accessToken, data.refreshToken);
+    } else {
+      console.log("Tokens not received from the response");
     }
     return "success";
   } catch (error) {
-    console.error("❌ Login failed:", error.response?.data || error.message);
+    console.error("Login failed:", error.response?.data || error.message);
     return error.response?.data?.error || "error";
   }
 };
-
-
-
 
 
   // 🆕 🔐 Signup Function
