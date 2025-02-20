@@ -63,6 +63,24 @@ useEffect(() => {
     fetchGardens();
   }, []);
 
+  useEffect(() => {
+    const fetchSavedImage = async () => {
+      try {
+        const backendUrl = "https://virtualgrow-server.onrender.com";
+        const response = await axios.get(`${backendUrl}/api/ai/images/${name}`);
+        if (response.data && response.data.length > 0) {
+          // Assuming you want the most recent image if there are multiple.
+          setImageUrl(response.data[0].imageUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching saved image:", error);
+      }
+    };
+  
+    fetchSavedImage();
+  }, [name]);
+  
+
   // ✅ Confirm Delete (Opens confirmation modal)
   const confirmDelete = (gardenName) => {
     setGardenToDelete(gardenName);
