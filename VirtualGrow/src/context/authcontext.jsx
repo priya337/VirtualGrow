@@ -43,12 +43,13 @@ export const AuthProvider = ({ children }) => {
  // 🔑 Login Function
  const login = async (email, password) => {
   try {
-    const { data } = await axios.post(
-      `${BACKEND_URL}/api/users/login`,
-      { email, password },
-      { withCredentials: true } // ✅ Ensure cookies are sent
-    );
+    // No withCredentials needed, since we're not using cookies
+    const { data } = await axios.post(`${BACKEND_URL}/api/users/login`, {
+      email,
+      password,
+    });
 
+    // data contains { message, accessToken, refreshToken, user }
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
     localStorage.setItem("userEmail", email);
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     setAccessToken(data.accessToken);
     setUser(data.user);
 
-    console.log("✅ Login successful. Tokens stored.");
+    console.log("✅ Login successful. Tokens stored in localStorage.");
     return "success";
   } catch (error) {
     console.error("❌ Login failed:", error.response?.data || error.message);
@@ -138,20 +139,25 @@ const logout = async () => {
   try {
     console.log("🔍 Attempting logout...");
 
-    // Send POST request to logout route, with credentials for cookies
-    await axios.post(`${BACKEND_URL}/api/users/logout`, {}, {
-      withCredentials: true
-    });
+    // Retrieve refreshToken from localStorage
+    const refreshToken = localStorage.getItem("refreshToken");
 
-    // Clear any local user state if you want
+    if (refreshToken) {
+      // Send POST request with refreshToken in the body
+      await axios.post(`${BACKEND_URL}/api/users/logout`, { refreshToken });
+    } else {
+      console.log("❌ No refresh token found in localStorage.");
+    }
+
+    // Clear local user state
     setUser(null);
 
-    // If you previously stored tokens in localStorage but no longer need them:
+    // Remove tokens from localStorage
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("userEmail");
 
-    console.log("✅ Logged out successfully, cookies cleared on server.");
+    console.log("✅ Logged out successfully, tokens removed from localStorage.");
   } catch (error) {
     console.error("❌ Logout failed:", error.response?.data || error.message);
   }
