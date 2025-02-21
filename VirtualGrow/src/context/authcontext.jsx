@@ -115,27 +115,24 @@ export const AuthProvider = ({ children }) => {
 
 const deleteUserProfile = async () => {
   try {
-    const response = await fetch('/api/users/delete', {
+    const response = await fetch(`${BACKEND_URL}/api/users/delete`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       },
-      // Remove credentials: 'include' if you're not using cookies
-      body: JSON.stringify({ email: 'user@example.com' }) 
+      credentials: 'include', // This sends the cookies
+      body: JSON.stringify({ email: 'user@example.com' })
     });
 
     if (!response.ok) {
       throw new Error('Failed to delete profile');
     }
 
-    // You can still log the user out or redirect after deletion
-    // logout();
     console.log('Profile deleted successfully');
   } catch (error) {
     console.error('Error deleting profile:', error);
   }
 };
-
 
   
 const logout = async () => {
