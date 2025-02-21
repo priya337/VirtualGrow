@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import { UseAuth } from "../context/authcontext.jsx"; // <--- Import the same hook
 
 const BACKEND_URL = "https://virtualgrow-server.onrender.com";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  // Grab accessToken (and maybe user, if you store it in context) from your AuthContext
-  const { accessToken, user: contextUser, logout } = UseAuth();
-
-  // Local state if you want to store the user separately
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -20,25 +15,33 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (!accessToken) {
-        // If there's no token in context, user is not logged in
-        setMessage("No access token found. Please log in.");
-        return;
-      }
-
       try {
         setLoading(true);
 
-        // Attach token in Authorization header (Bearer pattern)
+        // 1. Try to read the cookie named "token" from document.cookie
+        //    This only works if the cookie is NOT HttpOnly
+        const cookieString = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="));
+
+        if (!cookieString) {
+          console.error("No 'token=' cookie found in document.cookie");
+          setMessage("No token cookie found. Please log in.");
+          setLoading(false);
+          return;
+        }
+
+        // cookieString might look like "token=eyJhbGciOiJIUzI1NiIsInR..."
+        // We'll attach that directly in the Cookie header:
         const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Cookie: cookieString,
           },
+          // No need for withCredentials here, since we’re manually setting Cookie
         });
 
         console.log("✅ Fetched user profile:", data);
         setUser(data);
-        setMessage("");
       } catch (error) {
         console.error("❌ Error fetching user profile:", error);
         setMessage("Error fetching user profile");
@@ -48,38 +51,30 @@ const Dashboard = () => {
     };
 
     fetchUserProfile();
-  }, [accessToken]);
+  }, []);
 
-  // If user is still null, or no token, show something
-  if (loading) {
-    return <p>Loading user profile...</p>;
-  }
-
-  if (!user) {
-    return <p style={{ color: "red" }}>{message || "No user data available."}</p>;
-  }
-
+  // Delete profile (similar approach)
   const handleDeleteProfile = async () => {
     setLoading(true);
     try {
-      if (!accessToken) {
-        setMessage("No access token found. Please log in.");
+      const cookieString = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="));
+
+      if (!cookieString) {
+        setMessage("No token cookie found. Please log in.");
         setLoading(false);
         return;
       }
 
       await axios.delete(`${BACKEND_URL}/api/users/delete`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Cookie: cookieString,
         },
       });
 
       setMessage("User profile deleted successfully!");
-      // Maybe call logout() to clear context
-      setTimeout(() => {
-        logout();
-        navigate("/signup");
-      }, 2000);
+      setTimeout(() => navigate("/signup"), 2000);
     } catch (error) {
       console.error("❌ Error deleting profile:", error);
       setMessage("Error deleting profile.");
@@ -89,27 +84,36 @@ const Dashboard = () => {
     }
   };
 
+  if (loading) {
+    return <p>Loading user profile...</p>;
+  }
+
+  if (!user) {
+    return <p style={{ color: "red" }}>{message || "No user data available."}</p>;
+  }
+
   return (
     <div>
-      {/* Profile UI */}
+      {/* Your existing UI */}
       <h2>Welcome, {user.name}!</h2>
       <p>Email: {user.email}</p>
-      {/* etc... */}
+      {/* ... etc ... */}
 
-      <button onClick={() => setShowDeleteModal(true)}>
+      <button onClick={() => setShowDeleteModal(true)} disabled={loading}>
         {loading ? <ClipLoader size={20} color="white" /> : "Delete My Profile"}
       </button>
 
       {showDeleteModal && (
         <div>
-          <p>Are you sure you want to delete your profile?</p>
-          <button onClick={handleDeleteProfile}>Confirm</button>
+          <h3>Confirm Deletion</h3>
+          <button onClick={handleDeleteProfile} disabled={loading}>
+            {loading ? <ClipLoader size={20} color="white" /> : "Confirm"}
+          </button>
         </div>
       )}
     </div>
   );
 };
-
 
 // Basic styling
 const styles = {
