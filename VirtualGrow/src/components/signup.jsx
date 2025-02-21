@@ -184,8 +184,8 @@ const Signup = () => {
           {message && <p style={{ color: "red" }}>{message}</p>}
 
           {/* Submit Button */}
-          <button type="submit" style={buttonStyle} disabled={loading}>
-            {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
+          <button type="submit" style={buttonStyle} disabled={loading} onClick={() => navigate("/")}>
+            {loading ? <ClipLoader size={20} color="white" /> : "Home"}
           </button>
         </form>
 
