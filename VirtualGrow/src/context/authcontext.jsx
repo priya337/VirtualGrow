@@ -155,12 +155,13 @@ const fetchUserProfile = async () => {
     const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
       withCredentials: true,
     });
-    console.log("✅ User profile fetched:", data);
+    console.log("✅ User profile fetched:", data); // <-- Check here
     setUser(data);
   } catch (error) {
     console.error("❌ Error fetching user profile:", error.response?.data || error.message);
   }
 };
+
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken, resetPassword, fetchUserProfile  }}>
