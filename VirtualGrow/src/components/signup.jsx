@@ -86,11 +86,9 @@ const Signup = () => {
   
       const result = await signup(payload);
       if (result === "success") {
-        // Auto-login step (if necessary) or fetch the profile to update context.
-        await fetchUserProfile();
         setMessage("✅ Signed up successfully!");
         setTimeout(() => {
-          navigate("/");
+          navigate("/"); // Redirect after signup
         }, 2000);
       } else {
         setMessage(`❌ Signup failed: ${result}`);
