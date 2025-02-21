@@ -46,12 +46,14 @@ export const AuthProvider = ({ children }) => {
     );
 
     console.log("Login response data:", data);
+    // Assuming the backend sets a cookie called 'token', you can now rely on that cookie.
     setUser(data.user);
 
+    // Optionally, you can remove localStorage storage if not needed:
     if (data.accessToken && data.refreshToken) {
+      // If you don't need to manually store tokens, you might remove these lines.
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
-      // Optionally, store the refresh token if needed:
       localStorage.setItem("refreshToken", data.refreshToken);
       console.log("Tokens stored:", data.accessToken, data.refreshToken);
     } else {
@@ -68,7 +70,8 @@ export const AuthProvider = ({ children }) => {
   // 🆕 🔐 Signup Function
   const signup = async (userData) => {
     try {
-      await axios.post(`${BACKEND_URL}/api/users/signup`, userData);
+      // Ensure withCredentials is used so that cookies are set
+      await axios.post(`${BACKEND_URL}/api/users/signup`, userData, { withCredentials: true });
       console.log("✅ Signup successful");
       return "success";
     } catch (error) {
@@ -76,6 +79,7 @@ export const AuthProvider = ({ children }) => {
       return error.response?.data?.error || "error";
     }
   };
+  
 
   // 🔄 Refresh Token Function
   const refreshAccessToken = async () => {
