@@ -79,17 +79,19 @@ const Signup = () => {
     setMessage("");
   
     try {
-      // Combine form data with the AI-generated photo URL
       const payload = {
         ...form,
         photo: previewUrl,
       };
+  
       const result = await signup(payload);
       if (result === "success") {
-        // Re-fetch the user profile to update AuthContext
+        // Auto-login step (if necessary) or fetch the profile to update context.
         await fetchUserProfile();
         setMessage("✅ Signed up successfully!");
-  
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       } else {
         setMessage(`❌ Signup failed: ${result}`);
       }
@@ -98,6 +100,7 @@ const Signup = () => {
     }
     setLoading(false);
   };
+  
   
 
   return (
