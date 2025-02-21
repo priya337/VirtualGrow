@@ -39,35 +39,29 @@ export const AuthProvider = ({ children }) => {
  // 🔑 Login Function
  const login = async (email, password) => {
   try {
-    // 1) Attempt login
-    const { data } = await axios.post(`${BACKEND_URL}/api/users/login`, 
-      { email, password }, 
+    const { data } = await axios.post({BACKEND_URL}/api/users/login,
+      { email, password },
       { withCredentials: true }
     );
-    console.log("Login response data:", data);
 
-    // 2) If login is successful, store tokens (optional)
+    console.log("Login response data:", data);
+    // Assuming the backend sets a cookie called 'token', you can now rely on that cookie.
+    setUser(data.user);
+
+    // Optionally, you can remove localStorage storage if not needed:
     if (data.accessToken && data.refreshToken) {
+      // If you don't need to manually store tokens, you might remove these lines.
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
+      console.log("Tokens stored:", data.accessToken, data.refreshToken);
+    } else {
+      console.log("Tokens not received from the response");
     }
-
-    // 3) Now fetch profile in a separate try/catch
-    try {
-      const profileRes = await axios.get(`${BACKEND_URL}/api/users/profile`, { withCredentials: true });
-      console.log("Profile data:", profileRes.data);
-      setUser(profileRes.data);
-      return "success";
-    } catch (profileError) {
-      console.error("Profile fetch failed:", profileError.response?.data || profileError.message);
-      // Return a more specific error
-      return "profile-fetch-failed";
-    }
-
+    return "success";
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
-    return "login-failed";
+    return error.response?.data?.error || "error";
   }
 };
 
