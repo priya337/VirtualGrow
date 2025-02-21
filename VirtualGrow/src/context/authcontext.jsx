@@ -66,19 +66,22 @@ export const AuthProvider = ({ children }) => {
   }
 };
 
-
   // 🆕 🔐 Signup Function
   const signup = async (userData) => {
     try {
-      // Ensure withCredentials is used so that cookies are set
       await axios.post(`${BACKEND_URL}/api/users/signup`, userData, { withCredentials: true });
       console.log("✅ Signup successful");
+  
+      // Fetch and update user profile immediately after signup
+      await fetchUserProfile();
+  
       return "success";
     } catch (error) {
       console.error("❌ Signup failed:", error.response?.data || error.message);
       return error.response?.data?.error || "error";
     }
   };
+  
   
 
   // 🔄 Refresh Token Function
@@ -134,7 +137,6 @@ const deleteUserProfile = async () => {
   }
 };
 
-  
 const logout = async () => {
   try {
     console.log("🔍 Attempting logout...");
