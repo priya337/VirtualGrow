@@ -90,10 +90,6 @@ const Signup = () => {
         await fetchUserProfile();
         setMessage("✅ Signed up successfully!");
   
-        // Navigate to Home after a brief delay (optional)
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
       } else {
         setMessage(`❌ Signup failed: ${result}`);
       }
