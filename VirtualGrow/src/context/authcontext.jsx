@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
  // 🔑 Login Function
  const login = async (email, password) => {
   try {
+    // 1) Log in and get tokens/cookie
     const { data } = await axios.post(
       `${BACKEND_URL}/api/users/login`,
       { email, password },
@@ -46,12 +47,9 @@ export const AuthProvider = ({ children }) => {
     );
 
     console.log("Login response data:", data);
-    // Assuming the backend sets a cookie called 'token', you can now rely on that cookie.
-    setUser(data.user);
 
-    // Optionally, you can remove localStorage storage if not needed:
+    // 2) (Optional) Store tokens locally if you still need them
     if (data.accessToken && data.refreshToken) {
-      // If you don't need to manually store tokens, you might remove these lines.
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
@@ -59,12 +57,23 @@ export const AuthProvider = ({ children }) => {
     } else {
       console.log("Tokens not received from the response");
     }
+
+    // 3) Immediately fetch the full user profile
+    const profileRes = await axios.get(`${BACKEND_URL}/api/users/profile`, {
+      withCredentials: true,
+    });
+    console.log("Profile data:", profileRes.data);
+
+    // 4) Update your context's user state with the full profile
+    setUser(profileRes.data);
+
     return "success";
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
     return error.response?.data?.error || "error";
   }
 };
+
 
   // 🆕 🔐 Signup Function
   const signup = async (userData) => {
