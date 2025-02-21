@@ -160,7 +160,6 @@ const fetchUserProfile = async () => {
   }
 };
 
-
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken, resetPassword, fetchUserProfile  }}>
       {children}
