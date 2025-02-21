@@ -1,47 +1,31 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 
+// Replace with your actual backend URL
 const BACKEND_URL = "https://virtualgrow-server.onrender.com";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
+  // Local state to hold user info (fetched directly)
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  // 1. Fetch the user profile on component mount
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         setLoading(true);
-
-        // 1. Try to read the cookie named "token" from document.cookie
-        //    This only works if the cookie is NOT HttpOnly
-        const cookieString = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("token="));
-
-        if (!cookieString) {
-          console.error("No 'token=' cookie found in document.cookie");
-          setMessage("No token cookie found. Please log in.");
-          setLoading(false);
-          return;
-        }
-
-        // cookieString might look like "token=eyJhbGciOiJIUzI1NiIsInR..."
-        // We'll attach that directly in the Cookie header:
+        // Make sure you include { withCredentials: true } if you're using cookies
         const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
-          headers: {
-            Cookie: cookieString,
-          },
-          // No need for withCredentials here, since we’re manually setting Cookie
+          withCredentials: true,
         });
-
         console.log("✅ Fetched user profile:", data);
-        setUser(data);
+        setUser(data); // Store user data in local state
       } catch (error) {
         console.error("❌ Error fetching user profile:", error);
         setMessage("Error fetching user profile");
@@ -53,27 +37,16 @@ const Dashboard = () => {
     fetchUserProfile();
   }, []);
 
-  // Delete profile (similar approach)
+  // 2. Delete user profile
   const handleDeleteProfile = async () => {
     setLoading(true);
     try {
-      const cookieString = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="));
-
-      if (!cookieString) {
-        setMessage("No token cookie found. Please log in.");
-        setLoading(false);
-        return;
-      }
-
+      // Make a DELETE request or the appropriate request to delete the profile
       await axios.delete(`${BACKEND_URL}/api/users/delete`, {
-        headers: {
-          Cookie: cookieString,
-        },
+        withCredentials: true,
       });
-
       setMessage("User profile deleted successfully!");
+      // After deletion (and logout), redirect to /signup or anywhere else
       setTimeout(() => navigate("/signup"), 2000);
     } catch (error) {
       console.error("❌ Error deleting profile:", error);
@@ -84,31 +57,92 @@ const Dashboard = () => {
     }
   };
 
+  // 3. If still loading, or if no user was fetched, show something
   if (loading) {
-    return <p>Loading user profile...</p>;
+    return (
+      <div style={styles.container}>
+        <p>Loading user profile...</p>
+      </div>
+    );
   }
 
   if (!user) {
-    return <p style={{ color: "red" }}>{message || "No user data available."}</p>;
+    return (
+      <div style={styles.container}>
+        <p style={{ color: "red" }}>{message || "No user data available."}</p>
+      </div>
+    );
   }
 
+  // 4. If user data is present, show the profile
   return (
-    <div>
-      {/* Your existing UI */}
-      <h2>Welcome, {user.name}!</h2>
-      <p>Email: {user.email}</p>
-      {/* ... etc ... */}
+    <div style={styles.container}>
+      <div style={styles.card}>
+        {/* Profile Image Placeholder with user.photo */}
+        <div
+          style={{
+            ...styles.profileImage,
+            background: user.photo
+              ? `url(${user.photo}) no-repeat center center / cover`
+              : "url('/images/basket.jpg') no-repeat center center / cover",
+          }}
+        ></div>
 
-      <button onClick={() => setShowDeleteModal(true)} disabled={loading}>
-        {loading ? <ClipLoader size={20} color="white" /> : "Delete My Profile"}
-      </button>
+        <h2 style={{ color: "#2F855A", fontSize: "22px" }}>
+          Welcome, {user.name}!
+        </h2>
 
+        <div style={{ textAlign: "left", marginTop: "15px", fontSize: "16px" }}>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
+          <p>
+            <strong>Location:</strong> {user.location || "Not provided"}
+          </p>
+          <p>
+            <strong>Interested in Exterior Plants:</strong>{" "}
+            {user.ExteriorPlants ? "Yes" : "No"}
+          </p>
+          <p>
+            <strong>Interested in Interior Plants:</strong>{" "}
+            {user.InteriorPlants ? "Yes" : "No"}
+          </p>
+        </div>
+
+        {message && <p style={{ color: "red", marginTop: "10px" }}>{message}</p>}
+
+        {/* Delete Profile Button */}
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          style={styles.deleteButton}
+          disabled={loading}
+        >
+          {loading ? <ClipLoader size={20} color="white" /> : "Delete My Profile"}
+        </button>
+      </div>
+
+      {/* Confirmation Modal for Deletion */}
       {showDeleteModal && (
-        <div>
-          <h3>Confirm Deletion</h3>
-          <button onClick={handleDeleteProfile} disabled={loading}>
-            {loading ? <ClipLoader size={20} color="white" /> : "Confirm"}
-          </button>
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete your profile? This cannot be undone.</p>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                style={styles.cancelButton}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteProfile}
+                style={styles.confirmButton}
+                disabled={loading}
+              >
+                {loading ? <ClipLoader size={20} color="white" /> : "Confirm"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
