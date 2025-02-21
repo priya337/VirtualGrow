@@ -77,18 +77,17 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
-
+  
     try {
       // Combine form data with the AI-generated photo URL
       const payload = {
         ...form,
         photo: previewUrl,
       };
-
-      // Call signup from AuthContext
       const result = await signup(payload);
-
       if (result === "success") {
+        // Re-fetch the full user profile to update AuthContext
+        await fetchUserProfile();
         setMessage("✅ Signed up successfully!");
       } else {
         setMessage(`❌ Signup failed: ${result}`);
@@ -96,9 +95,9 @@ const Signup = () => {
     } catch (error) {
       setMessage("❌ Error signing up.");
     }
-
     setLoading(false);
   };
+  
 
   return (
     <div style={containerStyle}>
