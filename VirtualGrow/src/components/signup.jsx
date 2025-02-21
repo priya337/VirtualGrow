@@ -86,9 +86,14 @@ const Signup = () => {
       };
       const result = await signup(payload);
       if (result === "success") {
-        // Re-fetch the full user profile to update AuthContext
+        // Re-fetch the user profile to update AuthContext
         await fetchUserProfile();
         setMessage("✅ Signed up successfully!");
+  
+        // Navigate to Home after a brief delay (optional)
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       } else {
         setMessage(`❌ Signup failed: ${result}`);
       }
@@ -184,8 +189,8 @@ const Signup = () => {
           {message && <p style={{ color: "red" }}>{message}</p>}
 
           {/* Submit Button */}
-          <button type="submit" style={buttonStyle} disabled={loading} onClick={() => navigate("/")}>
-            {loading ? <ClipLoader size={20} color="white" /> : "Home"}
+          <button type="submit" style={buttonStyle} disabled={loading}>
+            {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
           </button>
         </form>
 
