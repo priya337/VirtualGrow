@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 
-// Replace with your actual backend URL
 const BACKEND_URL = "https://virtualgrow-server.onrender.com";
 
 const Dashboard = () => {
@@ -15,17 +14,29 @@ const Dashboard = () => {
   const [message, setMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // 1. Fetch the user profile on component mount
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         setLoading(true);
-        // Make sure you include { withCredentials: true } if you're using cookies
+
+        // 1. Retrieve the token from localStorage (or sessionStorage)
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          // No token means user is not logged in, redirect or show error
+          setMessage("No token found. Please log in.");
+          setLoading(false);
+          return;
+        }
+
+        // 2. Attach the token in the Authorization header
         const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
+
         console.log("✅ Fetched user profile:", data);
-        setUser(data); // Store user data in local state
+        setUser(data);
       } catch (error) {
         console.error("❌ Error fetching user profile:", error);
         setMessage("Error fetching user profile");
@@ -37,16 +48,24 @@ const Dashboard = () => {
     fetchUserProfile();
   }, []);
 
-  // 2. Delete user profile
   const handleDeleteProfile = async () => {
     setLoading(true);
     try {
-      // Make a DELETE request or the appropriate request to delete the profile
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setMessage("No token found. Please log in.");
+        setLoading(false);
+        return;
+      }
+
+      // 3. Attach the token when deleting as well
       await axios.delete(`${BACKEND_URL}/api/users/delete`, {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       setMessage("User profile deleted successfully!");
-      // After deletion (and logout), redirect to /signup or anywhere else
       setTimeout(() => navigate("/signup"), 2000);
     } catch (error) {
       console.error("❌ Error deleting profile:", error);
@@ -57,7 +76,6 @@ const Dashboard = () => {
     }
   };
 
-  // 3. If still loading, or if no user was fetched, show something
   if (loading) {
     return (
       <div style={styles.container}>
@@ -74,11 +92,9 @@ const Dashboard = () => {
     );
   }
 
-  // 4. If user data is present, show the profile
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        {/* Profile Image Placeholder with user.photo */}
         <div
           style={{
             ...styles.profileImage,
@@ -111,7 +127,6 @@ const Dashboard = () => {
 
         {message && <p style={{ color: "red", marginTop: "10px" }}>{message}</p>}
 
-        {/* Delete Profile Button */}
         <button
           onClick={() => setShowDeleteModal(true)}
           style={styles.deleteButton}
@@ -121,7 +136,6 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Confirmation Modal for Deletion */}
       {showDeleteModal && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
