@@ -66,16 +66,31 @@ export const AuthProvider = ({ children }) => {
 
 
   // 🆕 🔐 Signup Function
-  const signup = async (userData) => {
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+  
     try {
-      await axios.post(`${BACKEND_URL}/api/users/signup`, userData);
-      console.log("✅ Signup successful");
-      return "success";
+      // Combine form data with the AI-generated photo URL
+      const payload = {
+        ...form,
+        photo: previewUrl,
+      };
+      const result = await signup(payload);
+      if (result === "success") {
+        // Re-fetch the full user profile to update AuthContext
+        await fetchUserProfile();
+        setMessage("✅ Signed up successfully!");
+      } else {
+        setMessage(`❌ Signup failed: ${result}`);
+      }
     } catch (error) {
-      console.error("❌ Signup failed:", error.response?.data || error.message);
-      return error.response?.data?.error || "error";
+      setMessage("❌ Error signing up.");
     }
+    setLoading(false);
   };
+  
 
   // 🔄 Refresh Token Function
   const refreshAccessToken = async () => {
