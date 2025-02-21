@@ -39,32 +39,38 @@ export const AuthProvider = ({ children }) => {
  // 🔑 Login Function
  const login = async (email, password) => {
   try {
-    const { data } = await axios.post(
-      `${BACKEND_URL}/api/users/login`,
-      { email, password },
+    // 1) Attempt login
+    const { data } = await axios.post(`${BACKEND_URL}/api/users/login`, 
+      { email, password }, 
       { withCredentials: true }
     );
-
     console.log("Login response data:", data);
-    // Assuming the backend sets a cookie called 'token', you can now rely on that cookie.
-    setUser(data.user);
 
-    // Optionally, you can remove localStorage storage if not needed:
+    // 2) If login is successful, store tokens (optional)
     if (data.accessToken && data.refreshToken) {
-      // If you don't need to manually store tokens, you might remove these lines.
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
-      console.log("Tokens stored:", data.accessToken, data.refreshToken);
-    } else {
-      console.log("Tokens not received from the response");
     }
-    return "success";
+
+    // 3) Now fetch profile in a separate try/catch
+    try {
+      const profileRes = await axios.get(`${BACKEND_URL}/api/users/profile`, { withCredentials: true });
+      console.log("Profile data:", profileRes.data);
+      setUser(profileRes.data);
+      return "success";
+    } catch (profileError) {
+      console.error("Profile fetch failed:", profileError.response?.data || profileError.message);
+      // Return a more specific error
+      return "profile-fetch-failed";
+    }
+
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
-    return error.response?.data?.error || "error";
+    return "login-failed";
   }
 };
+
 
   // 🆕 🔐 Signup Function
   const signup = async (userData) => {
@@ -155,13 +161,12 @@ const fetchUserProfile = async () => {
     const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
       withCredentials: true,
     });
-    console.log("✅ User profile fetched:", data); // <-- Check here
+    console.log("✅ User profile fetched:", data);
     setUser(data);
   } catch (error) {
     console.error("❌ Error fetching user profile:", error.response?.data || error.message);
   }
 };
-
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, accessToken, refreshAccessToken, resetPassword, fetchUserProfile  }}>
