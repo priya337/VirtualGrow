@@ -6,12 +6,16 @@ const EditGarden = () => {
   const { gardenName } = useParams();
   const navigate = useNavigate();
 
+  // Existing form fields
   const [formData, setFormData] = useState({
     name: "",
     length: "",
     breadth: "",
     preferredPlants: "",
   });
+
+  // 1️⃣ New state for the existing image
+  const [imageUrl, setImageUrl] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -22,12 +26,18 @@ const EditGarden = () => {
         const response = await axios.get(`${backendUrl}/api/ai/garden/${gardenName}`);
 
         if (response.data) {
+          // 2️⃣ Set form fields
           setFormData({
             name: response.data.name || "",
             length: response.data.gardenSize?.length || "",
             breadth: response.data.gardenSize?.breadth || "",
             preferredPlants: response.data.preferredPlants?.join(", ") || "",
           });
+
+          // 3️⃣ If garden has an imageUrl, display it
+          if (response.data.imageUrl) {
+            setImageUrl(response.data.imageUrl);
+          }
         }
       } catch (error) {
         console.error("Error fetching garden details:", error);
@@ -48,7 +58,7 @@ const EditGarden = () => {
     try {
       const backendUrl = "https://virtualgrow-server.onrender.com";
 
-      // ✅ Make a single `PUT` request to update the garden and regenerate AI plan
+      // Make a single `PUT` request to update the garden and regenerate AI plan
       const response = await axios.put(`${backendUrl}/api/ai/garden/${gardenName}`, {
         name: formData.name,
         gardenSize: { length: formData.length, breadth: formData.breadth },
@@ -57,7 +67,7 @@ const EditGarden = () => {
 
       console.log("✅ Garden details updated successfully!", response.data);
 
-      // ✅ Redirect to updated garden page
+      // Redirect to updated garden page
       navigate(`/gardenscapes/${formData.name}`);
     } catch (error) {
       console.error("❌ Error regenerating AI Garden:", error);
@@ -70,7 +80,8 @@ const EditGarden = () => {
     <div
       className="d-flex flex-column align-items-center justify-content-center min-vh-100"
       style={{
-        background: "linear-gradient(rgba(0, 50, 0, 0.8), rgba(0, 50, 0, 0.8)), url('/src/images/green-planet_12829583.png')",
+        background:
+          "linear-gradient(rgba(0, 50, 0, 0.8), rgba(0, 50, 0, 0.8)), url('/src/images/green-planet_12829583.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         width: "100vw",
@@ -79,9 +90,24 @@ const EditGarden = () => {
         position: "relative",
       }}
     >
-      <h2 className="text-light text-center">Edit AI Garden</h2>
+      <h2 className="text-light text-center mb-4">Edit AI Garden</h2>
 
-      <form onSubmit={handleRegenerate} className="p-4 bg-light rounded shadow" style={{ width: "400px" }}>
+      {/* 4️⃣ Display existing garden image (if available) */}
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt="Garden"
+          style={{ width: 300, marginBottom: "20px", borderRadius: "10px" }}
+        />
+      ) : (
+        <p className="text-light mb-4">No image available</p>
+      )}
+
+      <form
+        onSubmit={handleRegenerate}
+        className="p-4 bg-light rounded shadow"
+        style={{ width: "400px" }}
+      >
         <div className="mb-3">
           <label className="form-label">Garden Name</label>
           <input
@@ -130,7 +156,11 @@ const EditGarden = () => {
         </div>
 
         <div className="d-flex justify-content-between">
-          <button type="button" className="btn btn-secondary" onClick={() => navigate(`/gardenscapes`)}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => navigate(`/gardenscapes`)}
+          >
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={loading}>
