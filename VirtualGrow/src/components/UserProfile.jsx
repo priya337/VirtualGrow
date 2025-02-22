@@ -7,7 +7,7 @@ import { useContext, useState, useEffect } from "react";
 const PROFILE_URL = "https://virtualgrow-server.onrender.com/api/users/profile/";
 
 const Dashboard = () => {
-  const { user, deleteUserProfile } = useContext(AuthContext);
+  const [user, setUserState] = useState(contextUser);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -19,12 +19,9 @@ const Dashboard = () => {
     useEffect(() => {
       const fetchUserProfile = async () => {
         try {
-          // Use the username from contextUser if available
+          // Use the username from contextUser if available; if not, use a fallback (this ideally shouldn't happen if logged in)
           const userName = contextUser ? contextUser.name : "name";
-          const { data } = await axios.get(
-            `${PROFILE_URL}${userName}`,
-            { withCredentials: true }
-          );
+          const { data } = await axios.get(`${PROFILE_URL}${userName}`, { withCredentials: true });
           console.log("✅ User profile fetched:", data);
           setUserState(data);
           setUser(data);
