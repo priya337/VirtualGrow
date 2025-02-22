@@ -3,26 +3,24 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaTrash, FaEdit } from "react-icons/fa";
 
-
 export default function GardenList() {
   const [gardens, setGardens] = useState([]);
   const [error, setError] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [deleteMessage, setDeleteMessage] = useState(null);
   const [gardenToDelete, setGardenToDelete] = useState(null);
   const navigate = useNavigate();
   const [selectedCarrot, setSelectedCarrot] = useState(null);
 
+  // Favorites loaded from localStorage
   const [favoriteGardens, setFavoriteGardens] = useState([]);
 
-useEffect(() => {
-  const storedFavorites = JSON.parse(localStorage.getItem("favoriteGardens")) || [];
-  setFavoriteGardens(storedFavorites);
-}, []);
+  useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem("favoriteGardens")) || [];
+    setFavoriteGardens(storedFavorites);
+  }, []);
 
-
-  // 🥕 Handle Carrot Click (Now Receives Garden Properly)
+  // 🥕 Handle Carrot Click
   const handleCarrotClick = (garden) => {
     if (!garden || !garden.name) {
       console.error("Error: Garden data is missing!", garden);
@@ -32,21 +30,28 @@ useEffect(() => {
     console.log("🥕 Carrot clicked! Navigating to /gardenpicks with:", garden);
     setSelectedCarrot(garden.name);
 
+    // If it's not already in favorites, add it to localStorage
+    if (!favoriteGardens.some((fav) => fav.name === garden.name)) {
+      const updatedFavorites = [...favoriteGardens, garden];
+      setFavoriteGardens(updatedFavorites);
+      localStorage.setItem("favoriteGardens", JSON.stringify(updatedFavorites));
+    }
+
     setTimeout(() => {
       navigate("/gardenpicks", { state: { selectedGarden: garden } }); // Redirect with garden data
     }, 300);
   };
 
-  // ✅ Fetch Gardens (Fixed)
+  // ✅ Fetch Gardens
   useEffect(() => {
     const fetchGardens = async () => {
       try {
         setLoading(true);
         const backendUrl = "https://virtualgrow-server.onrender.com";
         const response = await axios.get(`${backendUrl}/api/ai/gardens`);
-  
+
         console.log("✅ API Response:", response.data);
-  
+
         if (response.status === 200 && Array.isArray(response.data)) {
           setGardens(response.data);
         } else {
@@ -63,24 +68,6 @@ useEffect(() => {
     fetchGardens();
   }, []);
 
-  useEffect(() => {
-    const fetchSavedImage = async () => {
-      try {
-        const backendUrl = "https://virtualgrow-server.onrender.com";
-        const response = await axios.get(`${backendUrl}/api/ai/images/${name}`);
-        if (response.data && response.data.length > 0) {
-          // Assuming you want the most recent image if there are multiple.
-          setImageUrl(response.data[0].imageUrl);
-        }
-      } catch (error) {
-        console.error("Error fetching saved image:", error);
-      }
-    };
-  
-    fetchSavedImage();
-  }, [name]);
-  
-
   // ✅ Confirm Delete (Opens confirmation modal)
   const confirmDelete = (gardenName) => {
     setGardenToDelete(gardenName);
@@ -92,19 +79,27 @@ useEffect(() => {
       console.log("No garden selected for deletion.");
       return;
     }
-  
+
     console.log(`Attempting to delete: "${gardenToDelete}"`);
-  
+
     try {
-      const backendUrl = "https://virtualgrow-server.onrender.com";;
+      const backendUrl = "https://virtualgrow-server.onrender.com";
       await axios.delete(`${backendUrl}/api/ai/garden/${encodeURIComponent(gardenToDelete)}`);
-  
+
       setDeleteMessage(`Garden "${gardenToDelete}" has been deleted successfully!`);
       setTimeout(() => setDeleteMessage(null), 3000);
-  
-      // Remove the deleted garden from the list
-      setGardens(prevGardens => prevGardens.filter(garden => garden.name !== gardenToDelete));
-  
+
+      // 1️⃣ Remove the deleted garden from the UI list
+      setGardens((prevGardens) =>
+        prevGardens.filter((garden) => garden.name !== gardenToDelete)
+      );
+
+      // 2️⃣ Also remove it from localStorage favorites
+      const storedFavorites = JSON.parse(localStorage.getItem("favoriteGardens")) || [];
+      const updatedFavorites = storedFavorites.filter((fav) => fav.name !== gardenToDelete);
+      localStorage.setItem("favoriteGardens", JSON.stringify(updatedFavorites));
+      setFavoriteGardens(updatedFavorites);
+
       // Close modal
       setGardenToDelete(null);
     } catch (error) {
@@ -112,13 +107,13 @@ useEffect(() => {
       setError("Failed to delete garden.");
     }
   };
-  
 
   return (
     <div
       className="d-flex flex-column align-items-center justify-content-center min-vh-100"
       style={{
-        background: "linear-gradient(rgba(0, 50, 0, 0.8), rgba(0, 50, 0, 0.8)), url('/src/images/green-planet_12829583.png')",
+        background:
+          "linear-gradient(rgba(0, 50, 0, 0.8), rgba(0, 50, 0, 0.8)), url('/src/images/green-planet_12829583.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         width: "100vw",
@@ -181,35 +176,41 @@ useEffect(() => {
                         <FaEdit />
                       </Link>
 
-                      <button className="btn btn-danger" onClick={() => confirmDelete(garden.name)}>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => confirmDelete(garden.name)}
+                      >
                         <FaTrash />
                       </button>
 
-{/* 🥕 Carrot Button (Redirects to Garden Picks) */}
-<button
-  onClick={() => {
-    if (!favoriteGardens.some(fav => fav.name === garden.name)) {
-      handleCarrotClick(garden);
-    }
-  }} 
-  className="btn"
-  style={{
-    backgroundColor: selectedCarrot === garden.name ? "#ffa500" : "#28a745",
-    color: "#fff",
-    fontSize: "20px",
-    fontWeight: "bold",
-    transition: "background-color 0.3s ease",
-    border: "2px solid #ffa500",
-    padding: "5px 10px",
-    borderRadius: "10px",
-    cursor: "pointer",
-    opacity: favoriteGardens.some(fav => fav.name === garden.name) ? 0.5 : 1, // Make it visually disabled if already added
-    pointerEvents: favoriteGardens.some(fav => fav.name === garden.name) ? "none" : "auto", // Prevent clicking if already added
-  }}
->
-  🥕
-</button>
-
+                      {/* 🥕 Carrot Button (Redirects to Garden Picks) */}
+                      <button
+                        onClick={() => {
+                          if (!favoriteGardens.some((fav) => fav.name === garden.name)) {
+                            handleCarrotClick(garden);
+                          }
+                        }}
+                        className="btn"
+                        style={{
+                          backgroundColor: selectedCarrot === garden.name ? "#ffa500" : "#28a745",
+                          color: "#fff",
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          transition: "background-color 0.3s ease",
+                          border: "2px solid #ffa500",
+                          padding: "5px 10px",
+                          borderRadius: "10px",
+                          cursor: "pointer",
+                          opacity: favoriteGardens.some((fav) => fav.name === garden.name)
+                            ? 0.5
+                            : 1,
+                          pointerEvents: favoriteGardens.some((fav) => fav.name === garden.name)
+                            ? "none"
+                            : "auto",
+                        }}
+                      >
+                        🥕
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -218,32 +219,41 @@ useEffect(() => {
           </div>
         )}
       </div>
-      {/* Confirmation Modal */}
-{gardenToDelete && (
-  <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-    <div className="modal-dialog" role="document">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title">Confirm Deletion</h5>
-          <button type="button" className="btn-close" onClick={() => setGardenToDelete(null)}></button>
-        </div>
-        <div className="modal-body">
-          <p>Are you sure you want to delete the garden "<strong>{gardenToDelete}</strong>"?</p>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={() => setGardenToDelete(null)}>
-            Cancel
-          </button>
-          <button type="button" className="btn btn-danger" onClick={handleDelete}>
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
 
+      {/* Confirmation Modal */}
+      {gardenToDelete && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Deletion</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setGardenToDelete(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  Are you sure you want to delete the garden "<strong>{gardenToDelete}</strong>"?
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setGardenToDelete(null)}
+                >
+                  Cancel
+                </button>
+                <button type="button" className="btn btn-danger" onClick={handleDelete}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-    
   );
 }
