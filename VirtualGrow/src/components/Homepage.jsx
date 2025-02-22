@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Logo from "../assets/VirtualGrowLogo-enhance.png";
+import Logo from "../assets/LogoVectorized-removebg-preview.png";
 import BackgroundImage from "../assets/garden2.jpg"; // Importing background image
 
 const Homepage = () => {
@@ -120,6 +120,7 @@ const styles = {
         boxShadow: "0 0 30px rgba(44, 138, 62, 0.7)",
         transition: "0.3s ease-in-out",
     },
+
     spinner: {
         position: "absolute",
         width: "60px",
