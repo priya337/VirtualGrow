@@ -1,63 +1,66 @@
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/authcontext.jsx";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import { useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const PROFILE_URL = "https://virtualgrow-server.onrender.com/api/users/profile/";
 
 const Dashboard = () => {
-  const [user, setUserState] = useState(contextUser);
+  // Destructure from AuthContext first
+  const { user: contextUser, setUser, deleteUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  // Now initialize local state with contextUser
+  const [user, setUserState] = useState(contextUser);
+  const [fetched, setFetched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // Destructure user as contextUser, setUser, and deleteUserProfile from AuthContext
-    const { user: contextUser, setUser, deleteUserProfile } = useContext(AuthContext);
-
-    // Use useEffect to fetch the user profile directly if not already in context.
-    useEffect(() => {
-      const fetchUserProfile = async () => {
-        try {
-          // Use the username from contextUser if available; if not, use a fallback (this ideally shouldn't happen if logged in)
-          const userName = contextUser ? contextUser.name : "name";
-          const { data } = await axios.get(`${PROFILE_URL}${userName}`, { withCredentials: true });
-          console.log("✅ User profile fetched:", data);
-          setUserState(data);
-          setUser(data);
-        } catch (error) {
-          console.error("❌ Error fetching user profile:", error.response?.data || error.message);
-        } finally {
-          setFetched(true);
-        }
-      };
-  
-      if (!contextUser) {
-        fetchUserProfile();
-      } else {
-        setUserState(contextUser);
+  // Use useEffect to fetch the user profile if not already in context.
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        // Use the username from contextUser if available; if not, fallback to "name"
+        const userName = contextUser ? contextUser.name : "name";
+        const { data } = await axios.get(`${PROFILE_URL}${userName}`, { withCredentials: true });
+        console.log("✅ User profile fetched:", data);
+        setUserState(data);
+        setUser(data);
+      } catch (error) {
+        console.error("❌ Error fetching user profile:", error.response?.data || error.message);
+      } finally {
         setFetched(true);
       }
-    }, [contextUser, setUser]);
-  
-    // Redirect to /login if there's no user after fetch completes.
-    if (!user && fetched) {
-      navigate("/login");
-      return null;
-    }
+    };
 
-   // While fetching the user profile, show a loading state.
-   if (!user) {
+    if (!contextUser) {
+      fetchUserProfile();
+    } else {
+      setUserState(contextUser);
+      setFetched(true);
+    }
+  }, [contextUser, setUser]);
+
+  // Redirect to /login if there's no user after fetch completes.
+  if (!user && fetched) {
+    navigate("/login");
+    return null;
+  }
+
+  // While fetching the user profile, show a loading state.
+  if (!user) {
     return <div>Loading...</div>;
   }
 
-  // 2. Delete user profile
+  // Delete user profile handler
   const handleDeleteProfile = async () => {
     setLoading(true);
     try {
       await deleteUserProfile();
       setMessage("User profile deleted successfully!");
-      // After deletion (and logout), redirect to /signup or anywhere else
+      // After deletion (and logout), redirect to /signup
       setTimeout(() => navigate("/signup"), 2000);
     } catch (error) {
       setMessage("Error deleting profile.");
@@ -88,7 +91,7 @@ const Dashboard = () => {
           textAlign: "center",
         }}
       >
-        {/* 3. Profile Image Placeholder with user.photo */}
+        {/* Profile Image Placeholder */}
         <div
           style={{
             width: "120px",
@@ -104,9 +107,7 @@ const Dashboard = () => {
           }}
         ></div>
 
-        <h2 style={{ color: "#2F855A", fontSize: "22px" }}>
-          Welcome, {user.name}!
-        </h2>
+        <h2 style={{ color: "#2F855A", fontSize: "22px" }}>Welcome, {user.name}!</h2>
 
         <div style={{ textAlign: "left", marginTop: "15px", fontSize: "16px" }}>
           <p>
@@ -127,7 +128,7 @@ const Dashboard = () => {
 
         {message && <p style={{ color: "red", marginTop: "10px" }}>{message}</p>}
 
-        {/* 4. Delete Profile Button */}
+        {/* Delete Profile Button */}
         <button
           onClick={() => setShowDeleteModal(true)}
           style={{
@@ -151,7 +152,7 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* 5. Confirmation Modal for Deletion */}
+      {/* Confirmation Modal for Deletion */}
       {showDeleteModal && (
         <div
           style={{
@@ -178,8 +179,7 @@ const Dashboard = () => {
           >
             <h3>Confirm Deletion</h3>
             <p>
-              Are you sure you want to delete your profile? This action cannot
-              be undone.
+              Are you sure you want to delete your profile? This action cannot be undone.
             </p>
             <div
               style={{
