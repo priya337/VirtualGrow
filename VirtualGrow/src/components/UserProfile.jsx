@@ -1,8 +1,7 @@
-import { useContext, useState } from "react";
 import { AuthContext } from "../context/authcontext.jsx";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-
+import { useContext, useState, useEffect } from "react";
 
 
 const PROFILE_URL = "https://virtualgrow-server.onrender.com/api/users/profile/";
