@@ -197,7 +197,7 @@ export default function Gardenscape() {
     <div
       className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-4 text-white"
       style={{
-        background: "url('/images/Flowergarden.png')",
+        background: "url('/images/nature.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         width: "100vw",
