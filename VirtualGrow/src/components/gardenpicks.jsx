@@ -5,26 +5,28 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const backendUrl = "https://virtualgrow-server.onrender.com/api/ai/garden"; // ✅ Correct API URL
 
 export default function GardenPicks() {
-  const { name } = useParams(); // ✅ Get garden name from URL if available
+  const { name } = useParams();
   const location = useLocation();
-  const navigate = useNavigate(); // ✅ Enables navigation
+  const navigate = useNavigate();
 
+  // If a garden was just picked from somewhere else, it might be passed in location.state
   const selectedGarden = location.state?.selectedGarden || null;
+
   const [favoriteGardens, setFavoriteGardens] = useState([]);
   const [gardenToRemove, setGardenToRemove] = useState(null);
   const [gardenDetails, setGardenDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ Fetch garden details if "name" exists in the URL
+  // 1️⃣ Fetch garden details if "name" exists in the URL
   useEffect(() => {
     if (!name) return;
 
     const fetchGardenDetails = async () => {
       try {
         setLoading(true);
-        console.log(`🔍 Fetching garden details from: ${API_URL}/${name}`);
-        const response = await fetch(`${API_URL}/${name}`);
+        console.log(`🔍 Fetching garden details from: ${backendUrl}/${name}`);
+        const response = await fetch(`${backendUrl}/${name}`);
         if (!response.ok) {
           throw new Error("Failed to fetch garden details.");
         }
@@ -43,19 +45,23 @@ export default function GardenPicks() {
     fetchGardenDetails();
   }, [name]);
 
-  // ✅ Load favorite gardens from localStorage
+  // 2️⃣ Load favorite gardens from localStorage *once*
+  //    Then if we have a newly selectedGarden, merge it in.
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("favoriteGardens")) || [];
     setFavoriteGardens(storedFavorites);
 
-    if (selectedGarden && !storedFavorites.some((fav) => fav.name === selectedGarden.name)) {
+    // If we have a newly selected garden, add it if not already in favorites
+    if (selectedGarden && !storedFavorites.some((g) => g.name === selectedGarden.name)) {
       const updatedFavorites = [...storedFavorites, selectedGarden];
       setFavoriteGardens(updatedFavorites);
       localStorage.setItem("favoriteGardens", JSON.stringify(updatedFavorites));
     }
-  }, [selectedGarden]);
+  }, [selectedGarden]); 
+  // ^^^^^^^^^^^^^^^
+  // Adding [selectedGarden] prevents this effect from running on every render.
 
-  // ✅ Remove favorite garden
+  // 3️⃣ Remove a favorite garden
   const confirmRemoveFavorite = (gardenName) => {
     setGardenToRemove(gardenName);
   };
@@ -68,14 +74,43 @@ export default function GardenPicks() {
     setGardenToRemove(null);
   };
 
-  // ✅ Ensure the user always lands on `/gardenpicks` when navigating back
+  // 4️⃣ Ensure the user always lands on `/gardenpicks` when navigating back
   const handleBackToList = () => {
     if (location.state?.fromGardenPicks) {
-      navigate("/gardenpicks"); // ✅ Navigate back to Favourite Picks
+      navigate("/gardenpicks");
     } else {
-      navigate("/gardenscapes"); // ✅ Default behavior
+      navigate("/gardenscapes");
     }
   };
+
+  // 5️⃣ Fetch the *latest* version of each favorite from the server
+  //    so we get updated imageUrl, etc.
+  useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem("favoriteGardens")) || [];
+
+    const fetchFavoriteGardens = async () => {
+      const updatedFavoriteGardens = [];
+      for (const fav of storedFavorites) {
+        try {
+          // If we stored entire objects in localStorage, 'fav' might be an object.
+          // If you only stored names, you'd do fetch(`${backendUrl}/${fav}`)
+          const res = await fetch(`${backendUrl}/${fav.name || fav}`);
+          if (res.ok) {
+            const data = await res.json();
+            updatedFavoriteGardens.push(data);
+          } else {
+            console.warn(`Garden "${fav.name || fav}" not found in DB. Removing from favorites...`);
+          }
+        } catch (err) {
+          console.error(`Error fetching garden "${fav.name || fav}":`, err);
+        }
+      }
+      setFavoriteGardens(updatedFavoriteGardens);
+      // Now the newest imageUrl is in favoriteGardens
+    };
+
+    fetchFavoriteGardens();
+  }, []); // Runs once on mount, so we have the updated docs
 
   return (
     <div
@@ -94,7 +129,7 @@ export default function GardenPicks() {
       {loading && <p className="text-dark text-center">Loading garden details...</p>}
       {error && <p className="text-danger text-center">Error: {error}</p>}
 
-      {/* ✅ Display fetched garden details */}
+      {/* ✅ Display fetched garden details (for the single garden, if we have one) */}
       {gardenDetails && (
         <div className="container mt-4 text-center">
           <h3>{gardenDetails.name}</h3>
@@ -126,13 +161,13 @@ export default function GardenPicks() {
                   <div className="card-body text-center">
                     <h5 className="card-title">{garden.name}</h5>
                     <div className="d-flex justify-content-center gap-2">
-                    <Link 
-  to={`/gardenscapes/${garden.name}`} 
-  className="btn btn-primary"
-  state={{ fromGardenPicks: true }} // ✅ Ensure state is passed correctly
->
-  View Garden Plan
-</Link>
+                      <Link
+                        to={`/gardenscapes/${garden.name}`}
+                        className="btn btn-primary"
+                        state={{ fromGardenPicks: true }}
+                      >
+                        View Garden Plan
+                      </Link>
                       <button className="btn btn-danger" onClick={() => confirmRemoveFavorite(garden.name)}>
                         Remove
                       </button>
