@@ -155,11 +155,10 @@ const logout = async () => {
   }
 };
 
-const fetchUserProfile = async () => {
+const fetchUserProfile = async (name) => {
   try {
-    const { data } = await axios.get(`${BACKEND_URL}/api/users/profile`, {
-      withCredentials: true,
-    });
+    // Ensure you encode the name in case it contains special characters
+    const { data } = await axios.get(`${BACKEND_URL}/api/users/profile/${encodeURIComponent(name)}`);
     console.log("✅ User profile fetched:", data);
     setUser(data);
   } catch (error) {
