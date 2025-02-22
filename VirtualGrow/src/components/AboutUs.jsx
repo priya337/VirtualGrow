@@ -16,12 +16,11 @@ const AboutUs = () => {
       </section>
 
       <section>
-        <h2>What We Offer</h2>
+       <h2>What We Offer</h2>
         <ul>
           <li><strong>Interactive Garden Tours:</strong> Explore virtual gardens and diverse plants.</li>
           <li><strong>Plant Care Guides:</strong> Expert tips for houseplants to garden perennials.</li>
-          <li><strong>Gardening Tutorials:</strong> Learn new skills through live workshops and tutorials.</li>
-          <li><strong>Community Connection:</strong> Share ideas and inspiration with fellow plant lovers.</li>
+          <li><strong>Gardening Tutorials:</strong> Learn new skills through the AI garden planner.</li>
         </ul>
       </section>
 
