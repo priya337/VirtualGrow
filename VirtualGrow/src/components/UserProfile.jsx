@@ -13,6 +13,10 @@ const Dashboard = () => {
   const [message, setMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    // Destructure user as contextUser, setUser, and deleteUserProfile from AuthContext
+    const { user: contextUser, setUser, deleteUserProfile } = useContext(AuthContext);
+
+
 
 
     // Use useEffect to fetch the user profile directly if not already in context.
