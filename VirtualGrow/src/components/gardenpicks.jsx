@@ -18,7 +18,7 @@ export default function GardenPicks() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 1️⃣ Fetch garden details if "name" exists in the URL
+
   useEffect(() => {
     if (!name) return;
 
@@ -45,21 +45,19 @@ export default function GardenPicks() {
     fetchGardenDetails();
   }, [name]);
 
-  // 2️⃣ Load favorite gardens from localStorage *once*
-  //    Then if we have a newly selectedGarden, merge it in.
+
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("favoriteGardens")) || [];
     setFavoriteGardens(storedFavorites);
 
-    // If we have a newly selected garden, add it if not already in favorites
+ 
     if (selectedGarden && !storedFavorites.some((g) => g.name === selectedGarden.name)) {
       const updatedFavorites = [...storedFavorites, selectedGarden];
       setFavoriteGardens(updatedFavorites);
       localStorage.setItem("favoriteGardens", JSON.stringify(updatedFavorites));
     }
   }, [selectedGarden]); 
-  // ^^^^^^^^^^^^^^^
-  // Adding [selectedGarden] prevents this effect from running on every render.
+
 
   // 3️⃣ Remove a favorite garden
   const confirmRemoveFavorite = (gardenName) => {
@@ -74,7 +72,7 @@ export default function GardenPicks() {
     setGardenToRemove(null);
   };
 
-  // 4️⃣ Ensure the user always lands on `/gardenpicks` when navigating back
+
   const handleBackToList = () => {
     if (location.state?.fromGardenPicks) {
       navigate("/gardenpicks");
