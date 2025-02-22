@@ -12,12 +12,7 @@ export default function Gardenscape() {
   const [showModal, setShowModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  // -------------------------------------------------------------------------------------------
-  // (A) This function was originally used for fetching a separate Image document (/images/:name).
-  //     In the single-document approach, you can remove or comment out fetchSavedImage() and
-  //     its calls, because the Garden's own imageUrl field is used instead.
-  //     But we'll keep it here "as is" to show minimal disruption. 
-  // -------------------------------------------------------------------------------------------
+
   const fetchSavedImage = async () => {
     try {
       const backendUrl = "https://virtualgrow-server.onrender.com";
@@ -110,10 +105,7 @@ export default function Gardenscape() {
     return value;
   };
 
-  // -------------------------------------------------------------------------------------------
-  // (B) Fetch garden details (SINGLE-DOCUMENT approach). 
-  //     If the garden doc has an imageUrl field, we set `imageUrl` from that field directly.
-  // -------------------------------------------------------------------------------------------
+
   useEffect(() => {
     if (!name) {
       setError("Invalid garden name.");
@@ -151,11 +143,7 @@ export default function Gardenscape() {
     fetchGarden();
   }, [name]);
 
-  // -------------------------------------------------------------------------------------------
-  // (C) This useEffect calls fetchSavedImage() from the old approach. 
-  //     For single-document approach, you can remove or comment out this entire block if you
-  //     don't need the /images/:name route anymore. 
-  // -------------------------------------------------------------------------------------------
+
   useEffect(() => {
     if (!name) return;
     fetchSavedImage();
@@ -178,11 +166,7 @@ export default function Gardenscape() {
     }
   }, [showModal, selectedGarden]);
 
-  // -------------------------------------------------------------------------------------------
-  // (D) Generate a new AI image and overwrite the garden doc. 
-  //     We set `imageUrl` in state to show the new image, and rely on the server's
-  //     single-doc approach (findOneAndUpdate) to store the imageUrl in the garden doc.
-  // -------------------------------------------------------------------------------------------
+
   const generateGardenImage = async () => {
     setLoadingImage(true);
     // Do NOT reset imageUrl to null here; keep the old image until new is ready
@@ -323,14 +307,14 @@ export default function Gardenscape() {
                 </div>
               )}
 
-              <div className="d-flex justify-content-center gap-3 my-3">
-                <Link to="/gardenscapes" className="btn btn-primary btn-lg flex-fill">
-                  Back to List
-                </Link>
-                <Link to="/gardenpicks" className="btn btn-secondary btn-lg flex-fill">
-                  Back to Picks
-                </Link>
-              </div>
+<div className="d-flex justify-content-center gap-3 my-3">
+  <Link to="/gardenscapes" className="btn btn-primary btn-sm px-3">
+    Back to List
+  </Link>
+  <Link to="/gardenpicks" className="btn btn-secondary btn-sm px-3">
+    Back to Picks
+  </Link>
+</div>
             </div>
 
             {/* Center Column: Garden Plan */}
