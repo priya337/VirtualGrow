@@ -308,10 +308,18 @@ export default function Gardenscape() {
               )}
 
 <div className="d-flex justify-content-center gap-3 my-3">
-  <Link to="/gardenscapes" className="btn btn-primary btn-sm px-3">
+  <Link
+    to="/gardenscapes"
+    className="btn btn-primary btn-sm px-2 py-1"
+    style={{ fontSize: "0.85rem" }}
+  >
     Back to List
   </Link>
-  <Link to="/gardenpicks" className="btn btn-secondary btn-sm px-3">
+  <Link
+    to="/gardenpicks"
+    className="btn btn-secondary btn-sm px-2 py-1"
+    style={{ fontSize: "0.85rem" }}
+  >
     Back to Picks
   </Link>
 </div>
