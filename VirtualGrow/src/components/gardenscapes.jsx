@@ -12,7 +12,12 @@ export default function Gardenscape() {
   const [showModal, setShowModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  // 1️⃣ Fetch any previously saved image if available
+  // -------------------------------------------------------------------------------------------
+  // (A) This function was originally used for fetching a separate Image document (/images/:name).
+  //     In the single-document approach, you can remove or comment out fetchSavedImage() and
+  //     its calls, because the Garden's own imageUrl field is used instead.
+  //     But we'll keep it here "as is" to show minimal disruption. 
+  // -------------------------------------------------------------------------------------------
   const fetchSavedImage = async () => {
     try {
       const backendUrl = "https://virtualgrow-server.onrender.com";
@@ -105,7 +110,10 @@ export default function Gardenscape() {
     return value;
   };
 
-  // Fetch garden details
+  // -------------------------------------------------------------------------------------------
+  // (B) Fetch garden details (SINGLE-DOCUMENT approach). 
+  //     If the garden doc has an imageUrl field, we set `imageUrl` from that field directly.
+  // -------------------------------------------------------------------------------------------
   useEffect(() => {
     if (!name) {
       setError("Invalid garden name.");
@@ -125,6 +133,11 @@ export default function Gardenscape() {
         }
         setSelectedGarden(response.data);
 
+        // (B1) If the garden has an imageUrl, set it in local state
+        if (response.data.imageUrl) {
+          setImageUrl(response.data.imageUrl);
+        }
+
         // Ensure updated layout suggestions
         if (response.data.gardenPlanOverview?.layoutSuggestions) {
           console.log("🎯 Setting Layout Suggestions:", response.data.gardenPlanOverview.layoutSuggestions);
@@ -138,7 +151,11 @@ export default function Gardenscape() {
     fetchGarden();
   }, [name]);
 
-  // Fetch any previously saved image on mount or when `name` changes
+  // -------------------------------------------------------------------------------------------
+  // (C) This useEffect calls fetchSavedImage() from the old approach. 
+  //     For single-document approach, you can remove or comment out this entire block if you
+  //     don't need the /images/:name route anymore. 
+  // -------------------------------------------------------------------------------------------
   useEffect(() => {
     if (!name) return;
     fetchSavedImage();
@@ -161,10 +178,14 @@ export default function Gardenscape() {
     }
   }, [showModal, selectedGarden]);
 
-  // Generate a new AI image
+  // -------------------------------------------------------------------------------------------
+  // (D) Generate a new AI image and overwrite the garden doc. 
+  //     We set `imageUrl` in state to show the new image, and rely on the server's
+  //     single-doc approach (findOneAndUpdate) to store the imageUrl in the garden doc.
+  // -------------------------------------------------------------------------------------------
   const generateGardenImage = async () => {
     setLoadingImage(true);
-    // ⚠️ Do NOT reset imageUrl to null here, so the old image remains visible until the new one is ready
+    // Do NOT reset imageUrl to null here; keep the old image until new is ready
 
     try {
       const prompt = `Layout Suggestions: ${layoutSuggestions}`;
@@ -172,10 +193,10 @@ export default function Gardenscape() {
       const apiUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
       console.log("🔄 Generating image from API:", apiUrl);
 
-      // Show the new image immediately
+      // (D1) Immediately display the new image
       setImageUrl(apiUrl);
 
-      // Save to the backend
+      // (D2) Save to the backend (POST /api/ai/saveImage) which overwrites the garden doc
       const backendUrl = "https://virtualgrow-server.onrender.com";
       await axios.post(`${backendUrl}/api/ai/saveImage`, {
         gardenName: name,
@@ -183,8 +204,7 @@ export default function Gardenscape() {
       });
 
       console.log("✅ Image saved to database");
-
-      // No need to re-fetch if we trust the new imageUrl
+      // No need to re-fetch if we trust the new imageUrl in local state
     } catch (error) {
       console.error("❌ Error generating/saving image:", error);
     } finally {
