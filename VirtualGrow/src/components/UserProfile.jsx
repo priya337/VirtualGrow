@@ -59,11 +59,13 @@ const Dashboard = () => {
   const handleDeleteProfile = async () => {
     setLoading(true);
     try {
-      await deleteUserProfile();
+      // Directly call the DELETE endpoint
+      await axios.delete("https://virtualgrow-server.onrender.com/api/users/profile", { withCredentials: true });
       setMessage("User profile deleted successfully!");
       // After deletion (and logout), redirect to /signup
-      setTimeout(() => navigate("/signup"), 2000);
+      setTimeout(() => navigate("/"), 2000);
     } catch (error) {
+      console.error("Error deleting profile:", error.response?.data || error.message);
       setMessage("Error deleting profile.");
     }
     setLoading(false);
