@@ -56,21 +56,24 @@ const Dashboard = () => {
   }
 
   // Delete user profile handler
-  const handleDeleteProfile = async () => {
-    setLoading(true);
-    try {
-      // Directly call the DELETE endpoint
-      await axios.delete("https://virtualgrow-server.onrender.com/api/users/profile", { withCredentials: true });
-      setMessage("User profile deleted successfully!");
-      // After deletion (and logout), redirect to /signup
-      setTimeout(() => navigate("/"), 2000);
-    } catch (error) {
-      console.error("Error deleting profile:", error.response?.data || error.message);
-      setMessage("Error deleting profile.");
-    }
-    setLoading(false);
-    setShowDeleteModal(false);
-  };
+// Delete user profile handler
+const handleDeleteProfile = async () => {
+  setLoading(true);
+  try {
+    await axios.delete("https://virtualgrow-server.onrender.com/api/users/delete", {
+      withCredentials: true,
+      data: { email: user.email }
+    });
+    setMessage("User profile deleted successfully!");
+    // After deletion (and logout), redirect to /signup
+    setTimeout(() => navigate("/signup"), 2000);
+  } catch (error) {
+    console.error("Error deleting profile:", error.response?.data || error.message);
+    setMessage("Error deleting profile.");
+  }
+  setLoading(false);
+  setShowDeleteModal(false);
+};
 
   return (
     <div
