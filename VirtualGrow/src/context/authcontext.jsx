@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
  // 🔑 Login Function
  const login = async (email, password) => {
   try {
-    const { data } = await axios.post(`{BACKEND_URL}/api/users/login`,
+    const { data } = await axios.post(`${BACKEND_URL}/api/users/login`,
       { email, password },
       { withCredentials: true }
     );
