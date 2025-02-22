@@ -306,6 +306,7 @@ navbar {
       } */
       .navbar {
         height: 9vh;
+        background-color: aquamarine;
         font-size: 15px;
         flex-direction: column;
         justify-content: center;
