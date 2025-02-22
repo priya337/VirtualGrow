@@ -20,10 +20,15 @@ const Dashboard = () => {
 
   // Use useEffect to fetch the user profile if not already in context.
   useEffect(() => {
+    // If there's no user in context, don't try to fetch and simply mark fetching as complete.
+    if (!contextUser) {
+      setFetched(true);
+      return;
+    }
+  
     const fetchUserProfile = async () => {
       try {
-        // Use the username from contextUser if available; if not, fallback to "name"
-        const userName = contextUser ? contextUser.name : "name";
+        const userName = contextUser.name; // Now we use the valid username from contextUser
         const { data } = await axios.get(`${PROFILE_URL}${userName}`, { withCredentials: true });
         console.log("✅ User profile fetched:", data);
         setUserState(data);
@@ -34,14 +39,10 @@ const Dashboard = () => {
         setFetched(true);
       }
     };
-
-    if (!contextUser) {
-      fetchUserProfile();
-    } else {
-      setUserState(contextUser);
-      setFetched(true);
-    }
+  
+    fetchUserProfile();
   }, [contextUser, setUser]);
+  
 
   // Redirect to /login if there's no user after fetch completes.
   if (!user && fetched) {
