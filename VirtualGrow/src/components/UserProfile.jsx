@@ -3,6 +3,8 @@ import { AuthContext } from "../context/authcontext.jsx";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 
+const PROFILE_URL = "https://virtualgrow-server.onrender.com/api/users/profile/";
+
 const Dashboard = () => {
   const { user, deleteUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -10,36 +12,41 @@ const Dashboard = () => {
   const [message, setMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+
+
     // Use useEffect to fetch the user profile directly if not already in context.
     useEffect(() => {
       const fetchUserProfile = async () => {
         try {
+          // Use the username from contextUser if available
+          const userName = contextUser ? contextUser.name : "name";
           const { data } = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL || "https://your-render-url.onrender.com"}/api/users/profile`,
+            `${PROFILE_URL}${userName}`,
             { withCredentials: true }
           );
           console.log("✅ User profile fetched:", data);
-          // Update both local state and context with fetched data.
           setUserState(data);
           setUser(data);
         } catch (error) {
           console.error("❌ Error fetching user profile:", error.response?.data || error.message);
+        } finally {
+          setFetched(true);
         }
       };
   
-      // If context user is not available, fetch it.
       if (!contextUser) {
         fetchUserProfile();
       } else {
         setUserState(contextUser);
+        setFetched(true);
       }
     }, [contextUser, setUser]);
-
-  // 1. If there's no user in context, redirect to /login
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
+  
+    // Redirect to /login if there's no user after fetch completes.
+    if (!user && fetched) {
+      navigate("/login");
+      return null;
+    }
 
    // While fetching the user profile, show a loading state.
    if (!user) {
