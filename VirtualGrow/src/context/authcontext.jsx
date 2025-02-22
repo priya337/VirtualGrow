@@ -37,20 +37,21 @@ export const AuthProvider = ({ children }) => {
 
 
  // 🔑 Login Function
- const login = async (email, password) => {
+ onst login = async (email, password) => {
   try {
-    const { data } = await axios.post(`${BACKEND_URL}/api/users/login`,
+    // Send login request
+    const { data } = await axios.post(
+      `${BACKEND_URL}/api/users/login`,
       { email, password },
       { withCredentials: true }
     );
+    console.log("Login successful:", data);
 
-    console.log("Login response data:", data);
-    // Assuming the backend sets a cookie called 'token', you can now rely on that cookie.
+    // Update user state with data returned from the login response
     setUser(data.user);
 
-    // Optionally, you can remove localStorage storage if not needed:
+    // Store tokens if provided (you may opt to use cookies only)
     if (data.accessToken && data.refreshToken) {
-      // If you don't need to manually store tokens, you might remove these lines.
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
@@ -58,6 +59,10 @@ export const AuthProvider = ({ children }) => {
     } else {
       console.log("Tokens not received from the response");
     }
+
+    // Optionally, fetch a detailed user profile if needed
+    await fetchUserProfile();
+
     return "success";
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
