@@ -10,10 +10,40 @@ const Dashboard = () => {
   const [message, setMessage] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    // Use useEffect to fetch the user profile directly if not already in context.
+    useEffect(() => {
+      const fetchUserProfile = async () => {
+        try {
+          const { data } = await axios.get(
+            `${process.env.REACT_APP_BACKEND_URL || "https://your-render-url.onrender.com"}/api/users/profile`,
+            { withCredentials: true }
+          );
+          console.log("✅ User profile fetched:", data);
+          // Update both local state and context with fetched data.
+          setUserState(data);
+          setUser(data);
+        } catch (error) {
+          console.error("❌ Error fetching user profile:", error.response?.data || error.message);
+        }
+      };
+  
+      // If context user is not available, fetch it.
+      if (!contextUser) {
+        fetchUserProfile();
+      } else {
+        setUserState(contextUser);
+      }
+    }, [contextUser, setUser]);
+
   // 1. If there's no user in context, redirect to /login
   if (!user) {
     navigate("/login");
     return null;
+  }
+
+   // While fetching the user profile, show a loading state.
+   if (!user) {
+    return <div>Loading...</div>;
   }
 
   // 2. Delete user profile
