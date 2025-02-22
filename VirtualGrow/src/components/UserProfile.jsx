@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useContext, useState, useEffect } from "react";
 
-
 const PROFILE_URL = "https://virtualgrow-server.onrender.com/api/users/profile/";
 
 const Dashboard = () => {
@@ -15,9 +14,6 @@ const Dashboard = () => {
 
     // Destructure user as contextUser, setUser, and deleteUserProfile from AuthContext
     const { user: contextUser, setUser, deleteUserProfile } = useContext(AuthContext);
-
-
-
 
     // Use useEffect to fetch the user profile directly if not already in context.
     useEffect(() => {
