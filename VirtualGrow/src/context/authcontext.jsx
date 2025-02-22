@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
 
  // 🔑 Login Function
- onst login = async (email, password) => {
+ const login = async (email, password) => {
   try {
     // Send login request
     const { data } = await axios.post(
